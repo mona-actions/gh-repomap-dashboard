@@ -50,7 +50,7 @@ function App() {
   return (
     <ThemeProvider colorMode={primerColorMode}>
       <BaseStyles>
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
           <PageLayout>
             <Suspense fallback={<PageSpinner />}>
               <Routes>

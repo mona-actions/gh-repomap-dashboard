@@ -40,6 +40,7 @@ function makeFile(
       most_depended_on: [],
       dependency_type_counts: {},
       clusters: [],
+      strong_clusters: [],
       circular_deps: [],
       orphan_repos: [],
     },

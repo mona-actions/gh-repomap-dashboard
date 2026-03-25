@@ -142,6 +142,13 @@ function createValidFixture(): Record<string, unknown> {
           size: 2,
         },
       ],
+      strong_clusters: [
+        {
+          id: 1,
+          repos: ['my-org/api-service'],
+          size: 1,
+        },
+      ],
       circular_deps: [['my-org/svc-a', 'my-org/svc-b']],
       orphan_repos: ['my-org/abandoned-project'],
     },
@@ -675,6 +682,7 @@ describe('StatsSchema', () => {
       expect(result.data.most_depended_on).toEqual([]);
       expect(result.data.dependency_type_counts).toEqual({});
       expect(result.data.clusters).toEqual([]);
+      expect(result.data.strong_clusters).toEqual([]);
       expect(result.data.circular_deps).toEqual([]);
       expect(result.data.orphan_repos).toEqual([]);
     }
@@ -793,6 +801,7 @@ describe('validateSchema', () => {
         most_depended_on: 'not-array',
         dependency_type_counts: 'not-record',
         clusters: 'not-array',
+        strong_clusters: 'not-array',
         circular_deps: 'not-array',
         orphan_repos: 'not-array',
       },

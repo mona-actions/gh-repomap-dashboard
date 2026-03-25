@@ -7,9 +7,9 @@ A modern web dashboard for visualizing inter-repository dependency graphs produc
 - 📊 **Overview Dashboard** — Stats, dependency type distribution, critical repos at a glance
 - 🔍 **Searchable Repo List** — Virtualized table with sorting, filtering, and keyboard navigation
 - 🌐 **Interactive Dependency Graph** — WebGL-powered (Sigma.js) visualization with zoom, pan, and highlighting
-- 🎯 **Smart Filtering** — Filter by org, dependency type, confidence level, cluster, and free-text search
+- 🎯 **Smart Filtering** — Filter by org, dependency type, confidence level, connected repo group (weak), and free-text search
 - 📋 **Repo Detail Panel** — Drill into direct, transitive, and reverse dependencies
-- 💡 **Insights** — Critical repos, circular dependencies, orphan repos, cluster explorer
+- 💡 **Insights** — Critical repos, mutual dependency groups (strong), orphan repos, connected repo group explorer (weak)
 - 📤 **Export** — Share filtered views via URL, export as JSON or CSV
 - 🌓 **Dark Mode** — Full Primer design system integration
 - ♿ **Accessible** — WCAG 2.1 AA, keyboard navigation, screen reader support
@@ -30,6 +30,15 @@ Open http://localhost:5173 and upload a `gh-repo-map` JSON file.
 3. Explore the dependency graph, filter by org/type, and drill into individual repos
 
 For split files (per-org mode), upload all files at once — they'll be automatically merged.
+
+## Interpreting Connectivity Groups
+
+- **Connected Repo Groups (Weak)**: ignores edge direction; good for migration wave sizing and blast-radius scoping.
+- **Mutual Dependency Groups (Strong)**: keeps edge direction; shows repos that are mutually reachable and harder to separate.
+
+Example: if `a -> b -> c` and `c -> b`, then weak grouping can place `a,b,c` together, while strong grouping yields `{b,c}` and `{a}`.
+
+Caveat: both group types can include external/unscanned repos when dependencies target repos outside the scanned set.
 
 ## Tech Stack
 
@@ -59,6 +68,14 @@ npx tsx src/test/fixtures/generate.ts
 ```
 
 Generates `small.json` (50 repos), `medium.json` (1K repos), and `edge-cases.json` fixtures.
+
+## Deployment (GitHub Pages)
+
+1. In GitHub, go to **Settings > Pages** and set **Source** to **GitHub Actions**.
+2. Push to `main` (or run **Actions > Deploy to GitHub Pages > Run workflow**).
+3. The workflow installs dependencies, runs tests + type-check, builds, and deploys `dist/`.
+
+The workflow sets `VITE_BASE_PATH` from `actions/configure-pages` for correct project Pages paths.
 
 ## Architecture
 

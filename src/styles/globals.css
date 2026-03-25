@@ -120,7 +120,9 @@ body {
   overflow: hidden;
   border-right: 1px solid var(--borderColor-default, #d0d7de);
   background-color: var(--bgColor-muted, #f6f8fa);
-  transition: width 0.2s ease, min-width 0.2s ease;
+  transition:
+    width 0.2s ease,
+    min-width 0.2s ease;
   flex-shrink: 0;
 }
 
@@ -198,7 +200,9 @@ body {
   border-radius: 6px;
   background-color: var(--bgColor-muted, #f6f8fa);
   cursor: pointer;
-  transition: border-color 0.2s, background-color 0.2s;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
   min-height: 200px;
 }
 
@@ -437,7 +441,9 @@ body {
   background-color: var(--bgColor-default, #fff);
   color: var(--fgColor-default, #1f2328);
   text-decoration: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .quick-action:hover {
@@ -496,7 +502,7 @@ body {
 }
 
 .critical-repo-item__name {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -870,7 +876,7 @@ body {
 }
 
 .repo-row__name code {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
   font-size: 13px;
 }
 
@@ -1448,6 +1454,12 @@ body {
   letter-spacing: 0.03em;
 }
 
+.cluster-select__help {
+  font-size: 12px;
+  color: var(--fgColor-muted, #636c76);
+  margin: 0 0 8px;
+}
+
 /* ────────────────────────────────────────────────────────────────
    Dep Type Toggles
    ──────────────────────────────────────────────────────────────── */
@@ -1575,8 +1587,12 @@ body {
 }
 
 @keyframes slideInRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .detail-panel__header {
@@ -1839,6 +1855,171 @@ body {
   border-bottom-color: var(--borderColor-accent-emphasis, #0969da);
 }
 
+.connectivity-summary {
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid var(--borderColor-default, #d0d7de);
+  border-radius: 8px;
+  background: var(--bgColor-muted, #f6f8fa);
+}
+
+.connectivity-summary__title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.connectivity-summary__description {
+  margin: 0 0 12px;
+  color: var(--fgColor-muted, #636c76);
+  font-size: 13px;
+}
+
+.connectivity-summary__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.connectivity-summary__card {
+  padding: 12px;
+  border: 1px solid var(--borderColor-muted, #d8dee4);
+  border-radius: 6px;
+  background: var(--bgColor-default, #fff);
+}
+
+.connectivity-summary__card h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.connectivity-summary__card p {
+  margin: 0 0 4px;
+  font-size: 13px;
+}
+
+.migration-cohorts {
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid var(--borderColor-default, #d0d7de);
+  border-radius: 8px;
+  background: var(--bgColor-default, #fff);
+}
+
+.migration-cohorts__title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.migration-cohorts__description {
+  margin: 0 0 12px;
+  color: var(--fgColor-muted, #636c76);
+  font-size: 13px;
+}
+
+.migration-cohorts__empty {
+  margin: 0;
+  color: var(--fgColor-muted, #636c76);
+  font-size: 13px;
+}
+
+.migration-cohorts__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.migration-cohorts__card {
+  border: 1px solid var(--borderColor-muted, #d8dee4);
+  border-radius: 6px;
+  background: var(--bgColor-muted, #f6f8fa);
+  padding: 12px;
+}
+
+.migration-cohorts__card-header {
+  margin-bottom: 8px;
+}
+
+.migration-cohorts__card-title {
+  margin: 0;
+  font-size: 14px;
+}
+
+.migration-cohorts__card-meta,
+.migration-cohorts__note {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--fgColor-muted, #636c76);
+}
+
+.migration-cohorts__group {
+  margin-top: 10px;
+}
+
+.migration-cohorts__group-title {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fgColor-muted, #636c76);
+}
+
+.migration-cohorts__repo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.migration-cohorts__repo-link {
+  background: none;
+  border: none;
+  color: var(--fgColor-accent, #0969da);
+  cursor: pointer;
+  padding: 0;
+  font-size: 12px;
+}
+
+.migration-cohorts__repo-link:hover {
+  text-decoration: underline;
+}
+
+.migration-cohorts__details {
+  margin-top: 10px;
+  border-top: 1px dashed var(--borderColor-default, #d0d7de);
+  padding-top: 10px;
+}
+
+.migration-cohorts__details summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--fgColor-muted, #636c76);
+}
+
+.migration-cohorts__one-hop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px 12px;
+}
+
+.migration-cohorts__show-more {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: var(--fgColor-accent, #0969da);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.migration-cohorts__empty-list {
+  margin: 0;
+  font-size: 12px;
+  color: var(--fgColor-muted, #636c76);
+}
+
 /* ── Critical Repos ────────────────────────────────────────────── */
 
 .critical-repos__header {
@@ -2021,6 +2202,12 @@ body {
   margin: 0;
 }
 
+.cluster-explorer__description {
+  font-size: 13px;
+  color: var(--fgColor-muted, #636c76);
+  margin: 6px 0 0;
+}
+
 .cluster-explorer__list {
   display: flex;
   flex-direction: column;
@@ -2041,13 +2228,21 @@ body {
 
 .cluster-explorer__cluster-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
 .cluster-explorer__cluster-info {
   font-size: 14px;
+}
+
+.cluster-explorer__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .cluster-explorer__filter-btn {
@@ -2062,6 +2257,20 @@ body {
 
 .cluster-explorer__filter-btn:hover {
   background-color: var(--bgColor-accent-muted, #ddf4ff);
+}
+
+.cluster-explorer__focus-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--borderColor-default, #d0d7de);
+  border-radius: 6px;
+  background: var(--bgColor-default, #fff);
+  color: var(--fgColor-default, #1f2328);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.cluster-explorer__focus-btn:hover {
+  background-color: var(--bgColor-muted, #f6f8fa);
 }
 
 .cluster-explorer__repo-list {
@@ -2446,33 +2655,33 @@ body {
    ════════════════════════════════════════════════════════════════ */
 
 /* Use Primer shadow tokens where possible; soften shadow for dark mode */
-[data-color-mode="dark"] .sidebar--open,
-[data-color-mode="dark"] .sidebar {
+[data-color-mode='dark'] .sidebar--open,
+[data-color-mode='dark'] .sidebar {
   box-shadow: 0 0 16px var(--shadow-color-default, rgba(0, 0, 0, 0.4));
 }
 
-[data-color-mode="dark"] .node-tooltip {
+[data-color-mode='dark'] .node-tooltip {
   box-shadow: 0 4px 12px var(--shadow-color-default, rgba(0, 0, 0, 0.4));
 }
 
-[data-color-mode="dark"] .graph-controls,
-[data-color-mode="dark"] .graph-legend {
+[data-color-mode='dark'] .graph-controls,
+[data-color-mode='dark'] .graph-legend {
   box-shadow: 0 1px 3px var(--shadow-color-default, rgba(0, 0, 0, 0.3));
 }
 
-[data-color-mode="dark"] .quick-action:hover {
+[data-color-mode='dark'] .quick-action:hover {
   box-shadow: 0 1px 3px var(--shadow-color-default, rgba(0, 0, 0, 0.3));
 }
 
-[data-color-mode="dark"] .detail-panel {
+[data-color-mode='dark'] .detail-panel {
   box-shadow: -4px 0 16px var(--shadow-color-default, rgba(0, 0, 0, 0.4));
 }
 
-[data-color-mode="dark"] .org-filter__dropdown {
+[data-color-mode='dark'] .org-filter__dropdown {
   box-shadow: 0 8px 24px var(--shadow-color-default, rgba(0, 0, 0, 0.35));
 }
 
 /* Ensure focus rings are visible in dark mode */
-[data-color-mode="dark"] .search-input__field:focus {
+[data-color-mode='dark'] .search-input__field:focus {
   box-shadow: 0 0 0 3px var(--borderColor-accent-muted, rgba(31, 111, 235, 0.3));
 }

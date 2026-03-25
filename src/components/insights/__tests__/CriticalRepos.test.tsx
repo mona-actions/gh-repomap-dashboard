@@ -18,6 +18,7 @@ const MOCK_STATS = {
   ],
   dependency_type_counts: {},
   clusters: [],
+  strong_clusters: [],
   circular_deps: [],
   orphan_repos: [],
 };

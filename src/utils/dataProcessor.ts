@@ -11,6 +11,7 @@
  */
 import { MultiDirectedGraph } from 'graphology';
 import { validateSchema, type OutputData } from '../schemas/repomap';
+import { computeStrongClusters } from './connectivity';
 import type { ProcessResult } from '../workers/types';
 
 /**
@@ -154,11 +155,18 @@ export function processFile(jsonText: string): ProcessResult {
   // 3. Build Graphology graph
   const graph = buildGraph(data);
 
-  // 4. Export serializable graph + metadata
+  // 4. Compute directed strong-connectivity groups (SCCs)
+  const strongClusters = computeStrongClusters(data.graph);
+  const stats = {
+    ...data.stats,
+    strong_clusters: strongClusters,
+  };
+
+  // 5. Export serializable graph + metadata
   return {
     serialized: graph.export(),
     metadata: data.metadata,
-    stats: data.stats,
+    stats,
     unresolved: data.unresolved,
     nodeCount: graph.order,
     edgeCount: graph.size,

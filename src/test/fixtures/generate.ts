@@ -256,6 +256,7 @@ export function generate(options: GenerateOptions): OutputData {
           size: Math.min(5, repos.length),
         },
       ],
+      strong_clusters: [],
       circular_deps: circularDeps,
       orphan_repos: orphans.slice(0, 10),
     },

@@ -23,7 +23,7 @@ The top-level JSON structure:
   "metadata": { /* scan context */ },
   "graph": { /* repo → dependencies map */ },
   "unresolved": { /* packages that couldn't be mapped to a repo */ },
-  "stats": { /* pre-computed analytics */ }
+  "stats": { /* CLI-provided summary analytics */ }
 }
 ```
 
@@ -61,7 +61,7 @@ When the output is split across multiple files:
 
 **Modes:** `merged` (single file), `per-org` (one file per org), `auto` (merged if <500 repos, per-org otherwise).
 
-If loading split files, the frontend should merge the `graph` maps from all files. Metadata and stats are per-file.
+If loading split files, the frontend should merge the `graph` maps from all files. Metadata and CLI stats are per-file.
 
 ---
 
@@ -169,7 +169,12 @@ These are typically third-party/external packages. The frontend can show these s
 
 ### `stats`
 
-Pre-computed analytics — the frontend does **not** need to recompute these.
+CLI-provided summary analytics used directly by dashboard/insight surfaces.
+These are part of the frontend integration contract.
+
+> **Contract disclaimer:** For this integration document, the CLI is **not**
+> expected to provide `stats.strong_clusters`. The frontend derives that field
+> from directed `graph` edges for the Strong view.
 
 ```jsonc
 {
@@ -201,9 +206,20 @@ Pre-computed analytics — the frontend does **not** need to recompute these.
 |-------|-------------------|
 | `most_depended_on` | Highlight critical repos (blast radius analysis) |
 | `dependency_type_counts` | Summary pie/bar chart |
-| `clusters` | Connected components — these are **migration units** |
-| `circular_deps` | Cycles that need attention before migration |
+| `clusters` | Connected Repo Groups (Weak) — ignore edge direction; useful migration units that may include external/unscanned repos |
+| `circular_deps` | Explicit dependency cycles to break before migration sequencing |
 | `orphan_repos` | Repos with zero connections (easy to migrate independently) |
+
+**Frontend-derived extension (documentation only, not a CLI requirement)**
+
+- `stats.strong_clusters`: Mutual Dependency Groups (Strong), derived from directed `graph` relationships in the frontend worker.
+- This field exists in client state for UI consistency, but is not required as CLI input contract for this document.
+
+**Interpretation quick check**
+
+- If `api -> shared -> infra` (one-way chain), all three can still be in one **Connected Repo Group (Weak)**.
+- In that same chain, **Mutual Dependency Groups (Strong)** are singletons unless there is a return path (for example `shared -> api`).
+- Both weak and strong groups may contain external/unscanned repos when edges target them.
 
 ---
 
@@ -299,7 +315,8 @@ function buildGraph(data: OutputSchema) {
 |------|------------|-------------|
 | **Overview Dashboard** | `metadata` + `stats` | High-level numbers, freshness, scan coverage |
 | **Dependency Graph** | `graph` → nodes + edges | Interactive force-directed or hierarchical layout |
-| **Cluster View** | `stats.clusters` | Connected components — migration units |
+| **Connected Repo Group View (Weak)** | `stats.clusters` | Connected Repo Groups (Weak) — ignore direction; may include external/unscanned repos |
+| **Mutual Dependency Group View (Strong)** | computed from `graph` (exposed as `stats.strong_clusters`) | Mutual Dependency Groups (Strong) — respect direction and indicate tight coupling |
 | **Critical Repos** | `stats.most_depended_on` | Repos with highest blast radius |
 | **Circular Dependencies** | `stats.circular_deps` | Cycles that block clean migration ordering |
 | **Orphan Repos** | `stats.orphan_repos` | Repos with no connections (migrate independently) |
@@ -329,7 +346,7 @@ The frontend should support filtering by:
 - **Dependency type** — Toggle package/workflow/action/docker/etc.
 - **Confidence** — Hide low-confidence (script-based) edges
 - **Archived** — Dim or hide archived repos
-- **Cluster** — Isolate a specific connected component
+- **Connected Repo Group (Weak)** — Isolate a specific weak group (ignores direction; may include external/unscanned repos)
 - **Search** — Find a repo and highlight its N-hop neighborhood
 
 ### Color Coding

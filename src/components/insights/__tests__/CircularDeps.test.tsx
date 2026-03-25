@@ -23,6 +23,7 @@ describe('CircularDeps', () => {
         most_depended_on: [],
         dependency_type_counts: {},
         clusters: [],
+        strong_clusters: [],
         circular_deps: [['org/a', 'org/b']],
         orphan_repos: [],
       },
@@ -54,6 +55,7 @@ describe('CircularDeps', () => {
         most_depended_on: [],
         dependency_type_counts: {},
         clusters: [],
+        strong_clusters: [],
         circular_deps: [['org/a', 'org/b', 'org/c']],
         orphan_repos: [],
       },
@@ -81,6 +83,7 @@ describe('CircularDeps', () => {
         most_depended_on: [],
         dependency_type_counts: {},
         clusters: [],
+        strong_clusters: [],
         circular_deps: [],
         orphan_repos: [],
       },
@@ -108,6 +111,7 @@ describe('CircularDeps', () => {
         most_depended_on: [],
         dependency_type_counts: {},
         clusters: [],
+        strong_clusters: [],
         circular_deps: [['org/a', 'org/b']],
         orphan_repos: [],
       },
@@ -123,7 +127,7 @@ describe('CircularDeps', () => {
     renderWithTheme(<CircularDeps />);
 
     expect(
-      screen.getByText(/should be resolved for clean migration ordering/),
+      screen.getByText(/Mutual Dependency Groups \(Strong\)/),
     ).toBeInTheDocument();
   });
 
@@ -136,6 +140,7 @@ describe('CircularDeps', () => {
         most_depended_on: [],
         dependency_type_counts: {},
         clusters: [],
+        strong_clusters: [],
         circular_deps: [['org/x', 'org/y']],
         orphan_repos: [],
       },
@@ -162,6 +167,7 @@ describe('CircularDeps', () => {
         most_depended_on: [],
         dependency_type_counts: {},
         clusters: [],
+        strong_clusters: [],
         circular_deps: [
           ['org/a', 'org/b'],
           ['org/c', 'org/d', 'org/e'],

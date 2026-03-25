@@ -9,6 +9,9 @@ import { CriticalRepos } from '@/components/insights/CriticalRepos';
 import { CircularDeps } from '@/components/insights/CircularDeps';
 import { OrphanRepos } from '@/components/insights/OrphanRepos';
 import { ClusterExplorer } from '@/components/insights/ClusterExplorer';
+import { MutualDependencyGroups } from '@/components/insights/MutualDependencyGroups';
+import { ConnectivityComparison } from '@/components/insights/ConnectivityComparison';
+import { ConnectivityMigrationCohorts } from '@/components/insights/ConnectivityMigrationCohorts';
 import { UnresolvedPackages } from '@/components/insights/UnresolvedPackages';
 
 type InsightTab =
@@ -16,6 +19,7 @@ type InsightTab =
   | 'circular'
   | 'orphans'
   | 'clusters'
+  | 'strongClusters'
   | 'unresolved';
 
 interface TabConfig {
@@ -27,7 +31,8 @@ const TABS: TabConfig[] = [
   { id: 'critical', label: 'Critical Repos' },
   { id: 'circular', label: 'Circular Deps' },
   { id: 'orphans', label: 'Orphan Repos' },
-  { id: 'clusters', label: 'Clusters' },
+  { id: 'clusters', label: 'Connected Repo Groups (Weak)' },
+  { id: 'strongClusters', label: 'Mutual Dependency Groups (Strong)' },
   { id: 'unresolved', label: 'Unresolved Packages' },
 ];
 
@@ -76,7 +81,19 @@ export default function InsightsPage() {
           {activeTab === 'critical' && <CriticalRepos />}
           {activeTab === 'circular' && <CircularDeps />}
           {activeTab === 'orphans' && <OrphanRepos />}
-          {activeTab === 'clusters' && <ClusterExplorer />}
+          {activeTab === 'clusters' && (
+            <>
+              <ConnectivityComparison />
+              <ClusterExplorer />
+            </>
+          )}
+          {activeTab === 'strongClusters' && (
+            <>
+              <ConnectivityComparison />
+              <ConnectivityMigrationCohorts />
+              <MutualDependencyGroups />
+            </>
+          )}
           {activeTab === 'unresolved' && <UnresolvedPackages />}
         </div>
       </div>

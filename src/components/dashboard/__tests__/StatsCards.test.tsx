@@ -38,6 +38,7 @@ const mockStats: OutputData['stats'] = {
     package: 23,
   },
   clusters: [],
+  strong_clusters: [],
   circular_deps: [['org-alpha/sdk-1', 'org-alpha/api-0']],
   orphan_repos: ['org-gamma/orphan-1', 'org-gamma/orphan-2'],
 };

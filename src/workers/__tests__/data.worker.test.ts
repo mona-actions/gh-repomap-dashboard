@@ -12,6 +12,11 @@ import {
   deduplicateDeps,
 } from '../../utils/dataProcessor';
 import type { OutputData } from '../../schemas/repomap';
+import {
+  makeConnectivityFixture,
+  CONNECTIVITY_FIXTURE_WEAK_CLUSTERS,
+  CONNECTIVITY_FIXTURE_STRONG_CLUSTERS,
+} from '../../test/fixtures/connectivity';
 
 // ────────────────────────────────────────────────────────────────────────────
 // Test Fixtures
@@ -90,6 +95,7 @@ function makeValidOutput(
           size: 2,
         },
       ],
+      strong_clusters: [],
       circular_deps: [],
       orphan_repos: [],
     },
@@ -397,6 +403,75 @@ describe('processFile', () => {
     expect(attrsA?.directDeps).toBe(1);
   });
 
+  it('computes directed strong clusters from dependency edges', () => {
+    const makeDep = (repo: string): OutputData['graph'][string]['direct'][number] => ({
+      repo,
+      type: 'package',
+      confidence: 'high',
+      target_scanned: true,
+      source_file: 'package.json',
+      detail: {
+        type: 'package',
+        package_name: repo,
+        ecosystem: 'npm',
+        version: '^1.0.0',
+      },
+    });
+
+    const data = makeValidOutput({
+      graph: {
+        'my-org/a': {
+          scan_status: { sbom: 'done', filescan: 'done' },
+          annotations: {
+            fork_of: null,
+            template_from: null,
+            archived: false,
+          },
+          direct: [makeDep('my-org/b')],
+          transitive: [],
+        },
+        'my-org/b': {
+          scan_status: { sbom: 'done', filescan: 'done' },
+          annotations: {
+            fork_of: null,
+            template_from: null,
+            archived: false,
+          },
+          direct: [makeDep('my-org/a'), makeDep('my-org/c')],
+          transitive: [],
+        },
+        'my-org/c': {
+          scan_status: { sbom: 'done', filescan: 'done' },
+          annotations: {
+            fork_of: null,
+            template_from: null,
+            archived: false,
+          },
+          direct: [],
+          transitive: [],
+        },
+      },
+    });
+
+    const result = processFile(JSON.stringify(data));
+
+    expect(result.stats.strong_clusters).toEqual([
+      { id: 1, repos: ['my-org/a', 'my-org/b'], size: 2 },
+      { id: 2, repos: ['my-org/c'], size: 1 },
+    ]);
+  });
+
+  it('keeps weak groups and recomputes directed strong groups', () => {
+    const data = makeConnectivityFixture();
+
+    const result = processFile(JSON.stringify(data));
+
+    expect(result.stats.clusters).toEqual(CONNECTIVITY_FIXTURE_WEAK_CLUSTERS);
+    expect(result.stats.strong_clusters).toEqual(
+      CONNECTIVITY_FIXTURE_STRONG_CLUSTERS,
+    );
+  });
+
   it('preserves metadata, stats, and unresolved in the result', () => {
     const data = makeValidOutput();
     const result = processFile(JSON.stringify(data));
@@ -404,6 +479,10 @@ describe('processFile', () => {
     expect(result.metadata.generated_at).toBe('2024-01-15T10:00:00Z');
     expect(result.metadata.orgs_scanned).toEqual(['my-org']);
     expect(result.stats.most_depended_on).toHaveLength(1);
+    expect(result.stats.strong_clusters).toEqual([
+      { id: 1, repos: ['my-org/api-service'], size: 1 },
+      { id: 2, repos: ['my-org/shared-lib'], size: 1 },
+    ]);
     expect(result.unresolved['my-org/api-service']).toHaveLength(1);
   });
 
@@ -569,6 +648,7 @@ describe('mergeAndProcess', () => {
         most_depended_on: [],
         dependency_type_counts: {},
         clusters: [],
+        strong_clusters: [],
         circular_deps: [],
         orphan_repos: [],
       },
