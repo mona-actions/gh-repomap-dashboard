@@ -311,17 +311,23 @@ function buildGraph(data: OutputSchema) {
 
 ## Suggested Views
 
+The dashboard organizes content across four routes, with several insights available as tabs within the Insights page. The Repo Detail panel is a slide-over accessible from any view.
+
 | View | Data Source | Description |
 |------|------------|-------------|
-| **Overview Dashboard** | `metadata` + `stats` | High-level numbers, freshness, scan coverage |
-| **Dependency Graph** | `graph` → nodes + edges | Interactive force-directed or hierarchical layout |
-| **Connected Repo Group View (Weak)** | `stats.clusters` | Connected Repo Groups (Weak) — ignore direction; may include external/unscanned repos |
-| **Mutual Dependency Group View (Strong)** | computed from `graph` (exposed as `stats.strong_clusters`) | Mutual Dependency Groups (Strong) — respect direction and indicate tight coupling |
-| **Critical Repos** | `stats.most_depended_on` | Repos with highest blast radius |
-| **Circular Dependencies** | `stats.circular_deps` | Cycles that block clean migration ordering |
-| **Orphan Repos** | `stats.orphan_repos` | Repos with no connections (migrate independently) |
-| **Unresolved Packages** | `unresolved` | External dependencies outside scanned orgs |
-| **Repo Detail** | `graph[repo]` | Single repo: all inbound + outbound edges |
+| **Overview Dashboard** (`/dashboard`) | `metadata` + `stats` | High-level numbers, freshness, scan coverage |
+| **Repo List** (`/list`) | `graph` → rows | Searchable, sortable, virtualized table of repos with ecosystem badges |
+| **Dependency Graph** (`/graph`) | `graph` → nodes + edges | Interactive WebGL visualization with full filtering |
+| **Insights** (`/insights`) | multiple | Tabbed view containing the surfaces below |
+| ↳ Critical Repos | `stats.most_depended_on` | Repos with highest blast radius |
+| ↳ Circular Dependencies | `stats.circular_deps` | Cycles that block clean migration ordering |
+| ↳ Orphan Repos | `stats.orphan_repos` | Repos with no connections (migrate independently) |
+| ↳ Connected Repo Groups (Weak) | `stats.clusters` | Ignore direction; may include external/unscanned repos |
+| ↳ Mutual Dependency Groups (Strong) | computed from `graph` | Respect direction; indicate tight coupling |
+| ↳ Connectivity Comparison | `stats.clusters` + computed SCCs | Side-by-side weak vs strong group summary |
+| ↳ Migration Cohort Guidance | computed SCCs + `graph` | SCC-based recommendations for lock-step migration units |
+| **Unresolved Packages** (within Insights) | `unresolved` | External dependencies outside scanned orgs |
+| **Repo Detail** (slide-over panel) | `graph[repo]` | Single repo: all inbound + outbound edges |
 
 ---
 
@@ -343,11 +349,14 @@ For enterprise scale (5,000+ repos), **Cytoscape.js or Sigma.js** are recommende
 The frontend should support filtering by:
 
 - **Organization** — Show/hide repos by org
+- **Ecosystem** — Toggle by ecosystem (npm, go, maven, action, workflow, docker, etc.)
 - **Dependency type** — Toggle package/workflow/action/docker/etc.
-- **Confidence** — Hide low-confidence (script-based) edges
-- **Archived** — Dim or hide archived repos
+- **Confidence** — Toggle between all edges or high-confidence only
+- **Archived** — Show or hide archived repos
 - **Connected Repo Group (Weak)** — Isolate a specific weak group (ignores direction; may include external/unscanned repos)
 - **Search** — Find a repo and highlight its N-hop neighborhood
+
+> **Note:** The full filter set (ecosystem, dep type, confidence, archived, cluster) is available on the Graph view. Dashboard and List views expose a subset (org + search).
 
 ### Color Coding
 
@@ -355,10 +364,8 @@ The frontend should support filtering by:
 |---------|----------|
 | Node fill | By organization (categorical palette) |
 | Node size | By `dependents` count (larger = more critical) |
-| Node border | Scan status (green=done, yellow=partial, red=failed) |
-| Edge color | By dependency type |
+| Edge color | By ecosystem first (npm, action, workflow, docker, etc.), dependency type as fallback |
 | Edge style | Solid = high confidence, dashed = low confidence |
-| Node opacity | Dim archived repos |
 
 ---
 

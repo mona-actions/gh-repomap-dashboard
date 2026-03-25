@@ -7,9 +7,9 @@ A modern web dashboard for visualizing inter-repository dependency graphs produc
 - 📊 **Overview Dashboard** — Stats, dependency type distribution, critical repos at a glance
 - 🔍 **Searchable Repo List** — Virtualized table with sorting, filtering, and keyboard navigation
 - 🌐 **Interactive Dependency Graph** — WebGL-powered (Sigma.js) visualization with zoom, pan, and highlighting
-- 🎯 **Smart Filtering** — Filter by org, dependency type, confidence level, connected repo group (weak), and free-text search
+- 🎯 **Smart Filtering** — Filter by org, ecosystem, dependency type, confidence level, connected repo group (weak), archived toggle, and free-text search
 - 📋 **Repo Detail Panel** — Drill into direct, transitive, and reverse dependencies
-- 💡 **Insights** — Critical repos, mutual dependency groups (strong), orphan repos, connected repo group explorer (weak)
+- 💡 **Insights** — Critical repos, mutual dependency groups (strong), orphan repos, connected repo group explorer (weak), connectivity comparison, migration cohort guidance
 - 📤 **Export** — Share filtered views via URL, export as JSON or CSV
 - 🌓 **Dark Mode** — Full Primer design system integration
 - ♿ **Accessible** — WCAG 2.1 AA, keyboard navigation, screen reader support
@@ -42,7 +42,7 @@ Caveat: both group types can include external/unscanned repos when dependencies 
 
 ## Tech Stack
 
-- React 18 + TypeScript (strict mode)
+- React 19 + TypeScript (strict mode)
 - GitHub Primer Design System (@primer/react)
 - Sigma.js v3 + Graphology (WebGL graph visualization)
 - Zustand (state management with URL sync)
