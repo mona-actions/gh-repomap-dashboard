@@ -127,7 +127,7 @@ describe('CircularDeps', () => {
     renderWithTheme(<CircularDeps />);
 
     expect(
-      screen.getByText(/Mutual Dependency Groups \(Strong\)/),
+      screen.getByText(/Repo Groups \(Strong\)/),
     ).toBeInTheDocument();
   });
 

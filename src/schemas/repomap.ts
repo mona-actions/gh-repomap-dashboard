@@ -264,7 +264,7 @@ export const StatsSchema = z
     most_depended_on: z.array(MostDependedOnSchema).default([]),
     /** Count of edges by dependency type. */
     dependency_type_counts: z.record(z.string(), z.number()).default({}),
-    /** Connected Repo Groups (Weak) — migration-oriented groups that ignore direction. */
+    /** Repo Groups (Weak) — migration-oriented groups that ignore direction. */
     clusters: z.array(ClusterSchema).default([]),
     /** Mutual dependency groups in the directed graph (strong connectivity). */
     strong_clusters: z.array(ClusterSchema).default([]),

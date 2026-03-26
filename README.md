@@ -33,8 +33,8 @@ For split files (per-org mode), upload all files at once — they'll be automati
 
 ## Interpreting Connectivity Groups
 
-- **Connected Repo Groups (Weak)**: ignores edge direction; good for migration wave sizing and blast-radius scoping.
-- **Mutual Dependency Groups (Strong)**: keeps edge direction; shows repos that are mutually reachable and harder to separate.
+- **Repo Groups (Weak)**: ignores edge direction; good for migration wave sizing and blast-radius scoping.
+- **Repo Groups (Strong)**: keeps edge direction; shows repos that are mutually reachable and harder to separate.
 
 Example: if `a -> b -> c` and `c -> b`, then weak grouping can place `a,b,c` together, while strong grouping yields `{b,c}` and `{a}`.
 

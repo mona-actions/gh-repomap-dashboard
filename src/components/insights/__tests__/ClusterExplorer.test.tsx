@@ -35,7 +35,7 @@ describe('ClusterExplorer terminology', () => {
     render(<ClusterExplorer />);
 
     expect(
-      screen.getByText('Connected Repo Groups (Weak) (1)'),
+      screen.getByText('Repo Groups (Weak) (1)'),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -43,7 +43,7 @@ describe('ClusterExplorer terminology', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Connected Repo Group 3 \(Weak\)/),
+      screen.getByText(/Repo Group 3 \(Weak\)/),
     ).toBeInTheDocument();
     expect(screen.getByText(/2 repos/)).toBeInTheDocument();
   });
@@ -98,7 +98,7 @@ describe('ClusterExplorer terminology', () => {
     await user.click(screen.getAllByRole('button', { name: 'Focus Group' })[0]);
 
     expect(
-      screen.queryByText(/Connected Repo Group 2 \(Weak\)/),
+      screen.queryByText(/Repo Group 2 \(Weak\)/),
     ).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Show all groups' })).toBeInTheDocument();
   });

@@ -31,8 +31,8 @@ const TABS: TabConfig[] = [
   { id: 'critical', label: 'Critical Repos' },
   { id: 'circular', label: 'Circular Deps' },
   { id: 'orphans', label: 'Orphan Repos' },
-  { id: 'clusters', label: 'Connected Repo Groups (Weak)' },
-  { id: 'strongClusters', label: 'Mutual Dependency Groups (Strong)' },
+  { id: 'clusters', label: 'Repo Groups (Weak)' },
+  { id: 'strongClusters', label: 'Repo Groups (Strong)' },
   { id: 'unresolved', label: 'Unresolved Packages' },
 ];
 

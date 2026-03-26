@@ -29,10 +29,10 @@ describe('InsightsPage connectivity tabs', () => {
     render(<InsightsPage />);
 
     expect(
-      screen.getByRole('tab', { name: 'Connected Repo Groups (Weak)' }),
+      screen.getByRole('tab', { name: 'Repo Groups (Weak)' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('tab', { name: 'Mutual Dependency Groups (Strong)' }),
+      screen.getByRole('tab', { name: 'Repo Groups (Strong)' }),
     ).toBeInTheDocument();
   });
 
@@ -42,25 +42,25 @@ describe('InsightsPage connectivity tabs', () => {
     render(<InsightsPage />);
 
     await user.click(
-      screen.getByRole('tab', { name: 'Connected Repo Groups (Weak)' }),
+      screen.getByRole('tab', { name: 'Repo Groups (Weak)' }),
     );
 
     expect(
       screen.getByText('Connectivity Group Comparison'),
     ).toBeInTheDocument();
-    const weakSummary = screen.getByLabelText('Connected Repo Groups summary');
+    const weakSummary = screen.getByLabelText('Repo Groups (Weak) summary');
     expect(within(weakSummary).getByText('Groups: 2')).toBeInTheDocument();
     expect(
-      within(weakSummary).getByText('Largest group: 3 repos'),
+      within(weakSummary).getByText('Largest group: 3 scanned'),
     ).toBeInTheDocument();
 
     await user.click(
-      screen.getByRole('tab', { name: 'Mutual Dependency Groups (Strong)' }),
+      screen.getByRole('tab', { name: 'Repo Groups (Strong)' }),
     );
 
     expect(
       screen.getByRole('heading', {
-        name: /Mutual Dependency Groups \(Strong\) \(2\)/,
+        name: /Repo Groups \(Strong\) \(2\)/,
       }),
     ).toBeInTheDocument();
     expect(
@@ -69,10 +69,10 @@ describe('InsightsPage connectivity tabs', () => {
       }),
     ).toBeInTheDocument();
     const strongSummary = screen.getByLabelText(
-      'Mutual Dependency Groups summary',
+      'Repo Groups (Strong) summary',
     );
     expect(
-      within(strongSummary).getByText('Largest group: 2 repos'),
+      within(strongSummary).getByText('Largest group: 2 scanned'),
     ).toBeInTheDocument();
   });
 });

@@ -25,7 +25,7 @@ describe('MutualDependencyGroups', () => {
     render(<MutualDependencyGroups />);
 
     expect(
-      screen.getByText('Mutual Dependency Groups (Strong) (1)'),
+      screen.getByText('Repo Groups (Strong) (1)'),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -33,7 +33,7 @@ describe('MutualDependencyGroups', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Mutual Dependency Group 2 \(Strong\)/),
+      screen.getByText(/Repo Group 2 \(Strong\)/),
     ).toBeInTheDocument();
   });
 
@@ -57,7 +57,7 @@ describe('MutualDependencyGroups', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Focus Group' })[1]);
     expect(
-      screen.queryByText(/Mutual Dependency Group 1 \(Strong\)/),
+      screen.queryByText(/Repo Group 1 \(Strong\)/),
     ).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'org/b' }));

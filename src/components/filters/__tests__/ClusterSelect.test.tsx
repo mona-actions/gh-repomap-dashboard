@@ -35,7 +35,7 @@ describe('ClusterSelect terminology', () => {
     render(<ClusterSelect />);
 
     expect(
-      screen.getByText('Connected Repo Group (Weak)'),
+      screen.getByText('Repo Group (Weak)'),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -53,7 +53,7 @@ describe('ClusterSelect terminology', () => {
     expect(screen.getByRole('option', { name: 'All connected repo groups' })).toBeInTheDocument();
     expect(
       screen.getByRole('option', {
-        name: 'Connected Repo Group 1 (2 repos)',
+        name: 'Repo Group 1 (2 scanned)',
       }),
     ).toBeInTheDocument();
   });

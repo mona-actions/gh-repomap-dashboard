@@ -163,3 +163,61 @@ export function deriveMigrationCohorts(
     };
   });
 }
+
+export interface EnrichedCluster {
+  id: number;
+  repos: string[];
+  size: number;
+  scannedCount: number;
+  externalCount: number;
+  scannedRepos: string[];
+  externalRepos: string[];
+}
+
+/**
+ * Enrich a cluster with scanned/external repo breakdown.
+ * Uses the `isPhantom` node attribute to classify repos.
+ */
+export function enrichCluster(
+  cluster: Cluster,
+  graph: MultiDirectedGraph | null,
+): EnrichedCluster {
+  const scannedRepos: string[] = [];
+  const externalRepos: string[] = [];
+
+  for (const repo of cluster.repos) {
+    if (!graph) {
+      scannedRepos.push(repo);
+    } else if (
+      graph.hasNode(repo) &&
+      !graph.getNodeAttribute(repo, 'isPhantom')
+    ) {
+      scannedRepos.push(repo);
+    } else {
+      externalRepos.push(repo);
+    }
+  }
+
+  scannedRepos.sort((a, b) => a.localeCompare(b));
+  externalRepos.sort((a, b) => a.localeCompare(b));
+
+  return {
+    id: cluster.id,
+    repos: cluster.repos,
+    size: cluster.size,
+    scannedCount: scannedRepos.length,
+    externalCount: externalRepos.length,
+    scannedRepos,
+    externalRepos,
+  };
+}
+
+/**
+ * Enrich an array of clusters. Convenience wrapper.
+ */
+export function enrichClusters(
+  clusters: Cluster[],
+  graph: MultiDirectedGraph | null,
+): EnrichedCluster[] {
+  return clusters.map((c) => enrichCluster(c, graph));
+}

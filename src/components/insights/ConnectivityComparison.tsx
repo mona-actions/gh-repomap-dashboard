@@ -1,25 +1,28 @@
 import { useMemo } from 'react';
 import { useDataStore } from '@/store/dataStore';
+import { enrichClusters } from '@/utils/connectivity';
 
 export function ConnectivityComparison() {
   const stats = useDataStore((s) => s.stats);
 
   const summary = useMemo(() => {
-    const weak = stats?.clusters ?? [];
-    const strong = stats?.strong_clusters ?? [];
+    const graph = useDataStore.getState().graph;
+    const weakRaw = stats?.clusters ?? [];
+    const strongRaw = stats?.strong_clusters ?? [];
+    const weak = enrichClusters(weakRaw, graph);
+    const strong = enrichClusters(strongRaw, graph);
 
-    const largestWeak = weak.reduce((max, group) => Math.max(max, group.size), 0);
-    const largestStrong = strong.reduce(
-      (max, group) => Math.max(max, group.size),
-      0,
-    );
-    const strongMultiRepo = strong.filter((group) => group.size > 1).length;
+    const largestWeak = weak.reduce((max, g) => (g.scannedCount > max.scannedCount ? g : max), weak[0]);
+    const largestStrong = strong.reduce((max, g) => (g.scannedCount > max.scannedCount ? g : max), strong[0]);
+    const strongMultiRepo = strong.filter((g) => g.size > 1).length;
 
     return {
       weakCount: weak.length,
-      largestWeak,
+      largestWeakScanned: largestWeak?.scannedCount ?? 0,
+      largestWeakTotal: largestWeak?.size ?? 0,
       strongCount: strong.length,
-      largestStrong,
+      largestStrongScanned: largestStrong?.scannedCount ?? 0,
+      largestStrongTotal: largestStrong?.size ?? 0,
       strongMultiRepo,
     };
   }, [stats]);
@@ -34,16 +37,16 @@ export function ConnectivityComparison() {
       </p>
 
       <div className="connectivity-summary__cards">
-        <article className="connectivity-summary__card" aria-label="Connected Repo Groups summary">
-          <h4>Connected Repo Groups (Weak)</h4>
+        <article className="connectivity-summary__card" aria-label="Repo Groups (Weak) summary">
+          <h4>Repo Groups (Weak)</h4>
           <p>Groups: {summary.weakCount}</p>
-          <p>Largest group: {summary.largestWeak} repos</p>
+          <p>Largest group: {summary.largestWeakScanned} scanned{summary.largestWeakTotal > summary.largestWeakScanned ? ` (${summary.largestWeakTotal} total)` : ''}</p>
         </article>
 
-        <article className="connectivity-summary__card" aria-label="Mutual Dependency Groups summary">
-          <h4>Mutual Dependency Groups (Strong)</h4>
+        <article className="connectivity-summary__card" aria-label="Repo Groups (Strong) summary">
+          <h4>Repo Groups (Strong)</h4>
           <p>Groups: {summary.strongCount}</p>
-          <p>Largest group: {summary.largestStrong} repos</p>
+          <p>Largest group: {summary.largestStrongScanned} scanned{summary.largestStrongTotal > summary.largestStrongScanned ? ` (${summary.largestStrongTotal} total)` : ''}</p>
           <p>Groups with 2+ repos: {summary.strongMultiRepo}</p>
         </article>
       </div>

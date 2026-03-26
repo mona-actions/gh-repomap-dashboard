@@ -206,19 +206,19 @@ These are part of the frontend integration contract.
 |-------|-------------------|
 | `most_depended_on` | Highlight critical repos (blast radius analysis) |
 | `dependency_type_counts` | Summary pie/bar chart |
-| `clusters` | Connected Repo Groups (Weak) — ignore edge direction; useful migration units that may include external/unscanned repos |
+| `clusters` | Repo Groups (Weak) — ignore edge direction; useful migration units that may include external/unscanned repos |
 | `circular_deps` | Explicit dependency cycles to break before migration sequencing |
 | `orphan_repos` | Repos with zero connections (easy to migrate independently) |
 
 **Frontend-derived extension (documentation only, not a CLI requirement)**
 
-- `stats.strong_clusters`: Mutual Dependency Groups (Strong), derived from directed `graph` relationships in the frontend worker.
+- `stats.strong_clusters`: Repo Groups (Strong), derived from directed `graph` relationships in the frontend worker.
 - This field exists in client state for UI consistency, but is not required as CLI input contract for this document.
 
 **Interpretation quick check**
 
-- If `api -> shared -> infra` (one-way chain), all three can still be in one **Connected Repo Group (Weak)**.
-- In that same chain, **Mutual Dependency Groups (Strong)** are singletons unless there is a return path (for example `shared -> api`).
+- If `api -> shared -> infra` (one-way chain), all three can still be in one **Repo Group (Weak)**.
+- In that same chain, **Repo Groups (Strong)** are singletons unless there is a return path (for example `shared -> api`).
 - Both weak and strong groups may contain external/unscanned repos when edges target them.
 
 ---
@@ -322,8 +322,8 @@ The dashboard organizes content across four routes, with several insights availa
 | ↳ Critical Repos | `stats.most_depended_on` | Repos with highest blast radius |
 | ↳ Circular Dependencies | `stats.circular_deps` | Cycles that block clean migration ordering |
 | ↳ Orphan Repos | `stats.orphan_repos` | Repos with no connections (migrate independently) |
-| ↳ Connected Repo Groups (Weak) | `stats.clusters` | Ignore direction; may include external/unscanned repos |
-| ↳ Mutual Dependency Groups (Strong) | computed from `graph` | Respect direction; indicate tight coupling |
+| ↳ Repo Groups (Weak) | `stats.clusters` | Ignore direction; may include external/unscanned repos |
+| ↳ Repo Groups (Strong) | computed from `graph` | Respect direction; indicate tight coupling |
 | ↳ Connectivity Comparison | `stats.clusters` + computed SCCs | Side-by-side weak vs strong group summary |
 | ↳ Migration Cohort Guidance | computed SCCs + `graph` | SCC-based recommendations for lock-step migration units |
 | **Unresolved Packages** (within Insights) | `unresolved` | External dependencies outside scanned orgs |
@@ -353,7 +353,7 @@ The frontend should support filtering by:
 - **Dependency type** — Toggle package/workflow/action/docker/etc.
 - **Confidence** — Toggle between all edges or high-confidence only
 - **Archived** — Show or hide archived repos
-- **Connected Repo Group (Weak)** — Isolate a specific weak group (ignores direction; may include external/unscanned repos)
+- **Repo Group (Weak)** — Isolate a specific weak group (ignores direction; may include external/unscanned repos)
 - **Search** — Find a repo and highlight its N-hop neighborhood
 
 > **Note:** The full filter set (ecosystem, dep type, confidence, archived, cluster) is available on the Graph view. Dashboard and List views expose a subset (org + search).

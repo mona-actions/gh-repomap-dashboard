@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
-import type { Cluster } from '@/schemas/repomap';
+import type { EnrichedCluster } from '@/utils/connectivity';
 import { useUIStore } from '@/store/uiStore';
 
 const INITIAL_SHOW = 5;
 
 interface ConnectivityGroupExplorerProps {
-  groups: Cluster[];
+  groups: EnrichedCluster[];
   title: string;
   description: string;
   emptyMessage: string;
@@ -106,7 +106,10 @@ export function ConnectivityGroupExplorer({
                   <strong>
                     {groupLabel} {group.id} ({groupHint})
                   </strong>{' '}
-                  — {group.size} repos
+                  —{' '}
+                  {group.externalCount > 0
+                    ? `${group.scannedCount} scanned · ${group.externalCount} external`
+                    : `${group.size} repos`}
                 </span>
 
                 <div className="cluster-explorer__actions">
