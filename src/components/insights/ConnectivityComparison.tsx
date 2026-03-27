@@ -36,6 +36,15 @@ export function ConnectivityComparison() {
         Weak groups show repos that are connected in any direction. Strong groups show repos with mutual dependency paths in directed flow.
       </p>
 
+      <div className="connectivity-summary__example">
+        <p>
+          <strong>Example:</strong> if <em>A depends on B</em> and <em>B depends on C</em> and <em>C depends on B</em> —
+          weak grouping places A, B, and C together (any connection counts),
+          while strong grouping yields only {'{'}<em>B, C</em>{'}'} as a group (they depend on each other),
+          and A stays separate (nothing depends back on A).
+        </p>
+      </div>
+
       <div className="connectivity-summary__cards">
         <article className="connectivity-summary__card" aria-label="Repo Groups (Weak) summary">
           <h4>Repo Groups (Weak)</h4>

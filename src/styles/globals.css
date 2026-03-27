@@ -1875,6 +1875,21 @@ body {
   font-size: 13px;
 }
 
+.connectivity-summary__example {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--borderColor-accent, #0969da);
+  border-radius: 4px;
+  background: var(--bgColor-muted, #f6f8fa);
+  font-size: 13px;
+  color: var(--fgColor-muted, #636c76);
+  line-height: 1.5;
+}
+
+.connectivity-summary__example p {
+  margin: 0;
+}
+
 .connectivity-summary__cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

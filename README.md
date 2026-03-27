@@ -36,7 +36,7 @@ For split files (per-org mode), upload all files at once — they'll be automati
 - **Repo Groups (Weak)**: ignores edge direction; good for migration wave sizing and blast-radius scoping.
 - **Repo Groups (Strong)**: keeps edge direction; shows repos that are mutually reachable and harder to separate.
 
-Example: if `a -> b -> c` and `c -> b`, then weak grouping can place `a,b,c` together, while strong grouping yields `{b,c}` and `{a}`.
+Example: if A depends on B, B depends on C, and C depends on B — weak grouping places A, B, C together (any connection counts), while strong grouping yields {B, C} as a group (they depend on each other) and A stays separate (nothing depends back on A).
 
 Caveat: both group types can include external/unscanned repos when dependencies target repos outside the scanned set.
 
