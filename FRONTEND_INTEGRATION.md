@@ -217,8 +217,8 @@ These are part of the frontend integration contract.
 
 **Interpretation quick check**
 
-- If `api -> shared -> infra` (one-way chain), all three can still be in one **Repo Group (Weak)**.
-- In that same chain, **Repo Groups (Strong)** are singletons unless there is a return path (for example `shared -> api`).
+- If `api` depends on `shared` and `shared` depends on `infra` (one-way chain), all three can still be in one **Repo Group (Weak)**.
+- In that same chain, **Repo Groups (Strong)** are singletons unless there is a mutual dependency (for example `shared` also depends on `api`).
 - Both weak and strong groups may contain external/unscanned repos when edges target them.
 
 ---

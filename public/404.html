@@ -6,7 +6,11 @@
   <script>
     // Single Page Apps for GitHub Pages
     // https://github.com/rafgraph/spa-github-pages
-    var pathSegmentsToKeep = 1;
+    //
+    // pathSegmentsToKeep:
+    //   0 = site is at the root of the domain (e.g. user.github.io or custom domain)
+    //   1 = site is in a sub-path (e.g. user.github.io/repo-name)
+    var pathSegmentsToKeep = 0;
     var l = window.location;
     l.replace(
       l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
