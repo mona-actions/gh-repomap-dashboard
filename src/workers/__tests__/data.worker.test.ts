@@ -23,9 +23,7 @@ import {
 // ────────────────────────────────────────────────────────────────────────────
 
 /** Minimal valid OutputData structure for testing. */
-function makeValidOutput(
-  overrides: Partial<OutputData> = {},
-): OutputData {
+function makeValidOutput(overrides: Partial<OutputData> = {}): OutputData {
   return {
     schema_version: '1.0.0',
     metadata: {
@@ -84,9 +82,7 @@ function makeValidOutput(
       ],
     },
     stats: {
-      most_depended_on: [
-        { repo: 'my-org/shared-lib', direct_dependents: 1 },
-      ],
+      most_depended_on: [{ repo: 'my-org/shared-lib', direct_dependents: 1 }],
       dependency_type_counts: { package: 1 },
       clusters: [
         {
@@ -404,7 +400,9 @@ describe('processFile', () => {
   });
 
   it('computes directed strong clusters from dependency edges', () => {
-    const makeDep = (repo: string): OutputData['graph'][string]['direct'][number] => ({
+    const makeDep = (
+      repo: string,
+    ): OutputData['graph'][string]['direct'][number] => ({
       repo,
       type: 'package',
       confidence: 'high',

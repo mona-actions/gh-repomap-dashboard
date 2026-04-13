@@ -28,11 +28,7 @@ export function PageLayout({ children }: PageLayoutProps) {
         {/* Sidebar only shown when data is loaded */}
         {hasData && <Sidebar />}
 
-        <main
-          id="main-content"
-          tabIndex={-1}
-          className="page-layout__content"
-        >
+        <main id="main-content" tabIndex={-1} className="page-layout__content">
           {children}
         </main>
       </div>

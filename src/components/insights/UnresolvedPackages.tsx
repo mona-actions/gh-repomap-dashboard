@@ -154,7 +154,11 @@ export function UnresolvedPackages() {
         </table>
       )}
 
-      <div className="unresolved-packages__footer" role="status" aria-live="polite">
+      <div
+        className="unresolved-packages__footer"
+        role="status"
+        aria-live="polite"
+      >
         Showing {filtered.length} of {allPackages.length} packages
       </div>
     </div>

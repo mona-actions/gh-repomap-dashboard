@@ -161,8 +161,7 @@ export function generate(options: GenerateOptions): OutputData {
       const pkgNames = ['lodash', 'express', 'axios', 'react', 'vue'];
       unresolved[repo] = [
         {
-          package_name:
-            pkgNames[Math.floor(Math.random() * pkgNames.length)],
+          package_name: pkgNames[Math.floor(Math.random() * pkgNames.length)],
           ecosystem: 'npm',
           version: '^4.0.0',
           reason: 'no_matching_repo',
@@ -185,11 +184,7 @@ export function generate(options: GenerateOptions): OutputData {
   // Add circular deps
   const circularDeps: string[][] = [];
   if (circularDepChance > 0 && repos.length >= 2) {
-    for (
-      let i = 0;
-      i < Math.ceil(repoCount * circularDepChance * 0.01);
-      i++
-    ) {
+    for (let i = 0; i < Math.ceil(repoCount * circularDepChance * 0.01); i++) {
       const a = repos[Math.floor(Math.random() * repos.length)];
       const b = repos[Math.floor(Math.random() * repos.length)];
       if (a !== b) circularDeps.push([a, b]);
@@ -217,9 +212,7 @@ export function generate(options: GenerateOptions): OutputData {
   }
 
   const orphans = Object.entries(graph)
-    .filter(
-      ([key, node]) => node.direct.length === 0 && !depCounts.has(key),
-    )
+    .filter(([key, node]) => node.direct.length === 0 && !depCounts.has(key))
     .map(([key]) => key);
 
   let totalEdges = 0;

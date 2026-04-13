@@ -70,10 +70,16 @@ export function RepoRow({
       data-testid={`repo-row-${repo.id}`}
       style={style}
     >
-      <div className="repo-row__cell repo-row__name" style={{ width: COLUMN_WIDTHS.name }}>
+      <div
+        className="repo-row__cell repo-row__name"
+        style={{ width: COLUMN_WIDTHS.name }}
+      >
         <code>{repo.id}</code>
       </div>
-      <div className="repo-row__cell repo-row__org" style={{ width: COLUMN_WIDTHS.org }}>
+      <div
+        className="repo-row__cell repo-row__org"
+        style={{ width: COLUMN_WIDTHS.org }}
+      >
         <span
           className="repo-row__org-dot"
           style={{ backgroundColor: orgColor }}
@@ -81,18 +87,30 @@ export function RepoRow({
         />
         {repo.org}
       </div>
-      <div className="repo-row__cell repo-row__deps" style={{ width: COLUMN_WIDTHS.directDeps }}>
+      <div
+        className="repo-row__cell repo-row__deps"
+        style={{ width: COLUMN_WIDTHS.directDeps }}
+      >
         {repo.directDeps}
       </div>
-      <div className="repo-row__cell repo-row__dependents" style={{ width: COLUMN_WIDTHS.dependents }}>
+      <div
+        className="repo-row__cell repo-row__dependents"
+        style={{ width: COLUMN_WIDTHS.dependents }}
+      >
         {repo.dependents}
       </div>
-      <div className="repo-row__cell repo-row__types" style={{ width: COLUMN_WIDTHS.types }}>
+      <div
+        className="repo-row__cell repo-row__types"
+        style={{ width: COLUMN_WIDTHS.types }}
+      >
         {repo.ecosystems.map((eco) => (
           <EcosystemBadge key={eco} ecosystem={eco} />
         ))}
       </div>
-      <div className="repo-row__cell repo-row__status" style={{ width: COLUMN_WIDTHS.status }}>
+      <div
+        className="repo-row__cell repo-row__status"
+        style={{ width: COLUMN_WIDTHS.status }}
+      >
         {repo.archived && (
           <span className="repo-row__archived-badge">Archived</span>
         )}

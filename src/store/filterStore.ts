@@ -80,9 +80,7 @@ const DEFAULT_FILTERS: FilterValues = {
  * Serialize filter state to URLSearchParams.
  * Only non-default values are written (keeps URLs clean).
  */
-export function stateToParams(
-  state: FilterValues,
-): URLSearchParams {
+export function stateToParams(state: FilterValues): URLSearchParams {
   const params = new URLSearchParams();
 
   if (state.selectedOrgs.length > 0) {
@@ -113,9 +111,7 @@ export function stateToParams(
 /**
  * Deserialize URLSearchParams into partial filter state.
  */
-export function paramsToState(
-  params: URLSearchParams,
-): Partial<FilterValues> {
+export function paramsToState(params: URLSearchParams): Partial<FilterValues> {
   const state: Partial<FilterValues> = {};
 
   const orgs = params.get('orgs');

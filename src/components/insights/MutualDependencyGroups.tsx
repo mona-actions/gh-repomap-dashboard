@@ -13,7 +13,11 @@ export function MutualDependencyGroups() {
   const stats = useDataStore((s) => s.stats);
 
   const enrichedClusters = useMemo(
-    () => enrichClusters(stats?.strong_clusters ?? [], useDataStore.getState().graph),
+    () =>
+      enrichClusters(
+        stats?.strong_clusters ?? [],
+        useDataStore.getState().graph,
+      ),
     [stats],
   );
 

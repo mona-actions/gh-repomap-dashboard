@@ -8,7 +8,13 @@
  * - Node/edge reducers apply visual encoding (colors, sizes, opacity)
  * - WebGL context loss handled with fallback message
  */
-import { useEffect, useRef, useCallback, useState, type MutableRefObject } from 'react';
+import {
+  useEffect,
+  useRef,
+  useCallback,
+  useState,
+  type MutableRefObject,
+} from 'react';
 import Sigma from 'sigma';
 import { NodeCircleProgram } from 'sigma/rendering';
 import { useDataStore } from '@/store/dataStore';
@@ -311,7 +317,8 @@ export function GraphContainer({
           <h2>WebGL Context Lost</h2>
           <p>
             The browser&apos;s graphics context was lost. This can happen when
-            the GPU is overloaded or the tab has been in the background too long.
+            the GPU is overloaded or the tab has been in the background too
+            long.
           </p>
           <p>Try refreshing the page or switching to the List View.</p>
         </div>

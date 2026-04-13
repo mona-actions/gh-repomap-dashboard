@@ -127,9 +127,7 @@ function createValidFixture(): Record<string, unknown> {
       ],
     },
     stats: {
-      most_depended_on: [
-        { repo: 'my-org/shared-lib', direct_dependents: 42 },
-      ],
+      most_depended_on: [{ repo: 'my-org/shared-lib', direct_dependents: 42 }],
       dependency_type_counts: {
         package: 150,
         workflow: 30,
@@ -421,9 +419,7 @@ describe('DependencyDetailSchema (discriminated union)', () => {
     });
     expect(result.success).toBe(true);
     if (result.success && result.data.type === 'workflow') {
-      expect(result.data.uses).toBe(
-        'org/repo/.github/workflows/ci.yml@main',
-      );
+      expect(result.data.uses).toBe('org/repo/.github/workflows/ci.yml@main');
     }
   });
 
@@ -453,13 +449,24 @@ describe('DependencyDetailSchema (discriminated union)', () => {
   });
 
   it('narrows type correctly for all 7 dependency types', () => {
-    const testCases: Array<{ input: Record<string, unknown>; expectedType: string }> = [
+    const testCases: Array<{
+      input: Record<string, unknown>;
+      expectedType: string;
+    }> = [
       {
-        input: { type: 'package', package_name: 'x', ecosystem: 'npm', version: '1' },
+        input: {
+          type: 'package',
+          package_name: 'x',
+          ecosystem: 'npm',
+          version: '1',
+        },
         expectedType: 'package',
       },
       {
-        input: { type: 'workflow', uses: 'org/repo/.github/workflows/ci.yml@main' },
+        input: {
+          type: 'workflow',
+          uses: 'org/repo/.github/workflows/ci.yml@main',
+        },
         expectedType: 'workflow',
       },
       {
@@ -467,7 +474,11 @@ describe('DependencyDetailSchema (discriminated union)', () => {
         expectedType: 'action',
       },
       {
-        input: { type: 'submodule', url: 'https://example.com/repo.git', path: 'vendor/lib' },
+        input: {
+          type: 'submodule',
+          url: 'https://example.com/repo.git',
+          path: 'vendor/lib',
+        },
         expectedType: 'submodule',
       },
       {

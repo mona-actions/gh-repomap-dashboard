@@ -75,9 +75,7 @@ describe('colors', () => {
     ];
 
     it('has all 7 dependency types', () => {
-      expect(Object.keys(DEP_TYPE_COLORS).sort()).toEqual(
-        expectedTypes.sort(),
-      );
+      expect(Object.keys(DEP_TYPE_COLORS).sort()).toEqual(expectedTypes.sort());
     });
 
     it('has valid hex color strings for all types', () => {

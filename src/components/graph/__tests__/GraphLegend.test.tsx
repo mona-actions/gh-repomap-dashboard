@@ -17,7 +17,10 @@ function buildTestGraph(): MultiDirectedGraph {
   graph.addNode('acme/b', { org: 'acme-corp', x: 1, y: 1 });
   graph.addNode('beta/c', { org: 'beta-labs', x: 2, y: 2 });
   graph.addEdge('acme/a', 'acme/b', { depType: 'action', ecosystem: 'action' });
-  graph.addEdge('acme/a', 'beta/c', { depType: 'workflow', ecosystem: 'workflow' });
+  graph.addEdge('acme/a', 'beta/c', {
+    depType: 'workflow',
+    ecosystem: 'workflow',
+  });
   graph.addEdge('acme/b', 'beta/c', { depType: 'package', ecosystem: 'npm' });
   return graph;
 }

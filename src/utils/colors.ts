@@ -11,10 +11,26 @@
 
 /** Curated 20-color palette (Tableau 20-style) for the first 20 orgs. */
 const PALETTE = [
-  '#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f',
-  '#edc948', '#b07aa1', '#ff9da7', '#9c755f', '#bab0ac',
-  '#5778a4', '#e49444', '#d1615d', '#85b6b2', '#6a9f58',
-  '#e7ca60', '#a87aa0', '#fc9db8', '#8d6a5a', '#b2a89f',
+  '#4e79a7',
+  '#f28e2b',
+  '#e15759',
+  '#76b7b2',
+  '#59a14f',
+  '#edc948',
+  '#b07aa1',
+  '#ff9da7',
+  '#9c755f',
+  '#bab0ac',
+  '#5778a4',
+  '#e49444',
+  '#d1615d',
+  '#85b6b2',
+  '#6a9f58',
+  '#e7ca60',
+  '#a87aa0',
+  '#fc9db8',
+  '#8d6a5a',
+  '#b2a89f',
 ];
 
 /**

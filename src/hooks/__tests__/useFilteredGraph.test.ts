@@ -107,10 +107,25 @@ describe('applyFilters', () => {
 
     // Build search index for the test graph
     buildSearchIndex([
-      { id: 'org-a/repo-1', org: 'org-a', name: 'repo-1', depTypes: 'package workflow' },
+      {
+        id: 'org-a/repo-1',
+        org: 'org-a',
+        name: 'repo-1',
+        depTypes: 'package workflow',
+      },
       { id: 'org-a/repo-2', org: 'org-a', name: 'repo-2', depTypes: 'package' },
-      { id: 'org-b/repo-3', org: 'org-b', name: 'repo-3', depTypes: 'package docker' },
-      { id: 'org-b/repo-4', org: 'org-b', name: 'repo-4', depTypes: 'workflow docker' },
+      {
+        id: 'org-b/repo-3',
+        org: 'org-b',
+        name: 'repo-3',
+        depTypes: 'package docker',
+      },
+      {
+        id: 'org-b/repo-4',
+        org: 'org-b',
+        name: 'repo-4',
+        depTypes: 'workflow docker',
+      },
     ]);
   });
 

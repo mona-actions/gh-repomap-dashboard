@@ -14,7 +14,9 @@ describe('FileDropzone', () => {
 
   it('renders default text content', () => {
     render(<FileDropzone onFilesSelected={vi.fn()} />);
-    expect(screen.getByText(/drag & drop json files here/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/drag & drop json files here/i),
+    ).toBeInTheDocument();
     expect(screen.getByText(/or click to browse/i)).toBeInTheDocument();
   });
 
@@ -91,7 +93,9 @@ describe('FileDropzone', () => {
     render(<FileDropzone onFilesSelected={onFilesSelected} />);
 
     const zone = screen.getByTestId('file-dropzone');
-    const jsonFile = new File(['{}'], 'data.json', { type: 'application/json' });
+    const jsonFile = new File(['{}'], 'data.json', {
+      type: 'application/json',
+    });
     const txtFile = new File(['hello'], 'readme.txt', { type: 'text/plain' });
 
     fireEvent.drop(zone, {

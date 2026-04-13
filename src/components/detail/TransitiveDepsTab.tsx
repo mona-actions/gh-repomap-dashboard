@@ -6,7 +6,10 @@
  */
 import { useEffect, useMemo, useCallback, useReducer } from 'react';
 import { Spinner } from '@primer/react';
-import { DependencyTypeBadge, type DependencyType } from '@/components/shared/DependencyTypeBadge';
+import {
+  DependencyTypeBadge,
+  type DependencyType,
+} from '@/components/shared/DependencyTypeBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useDataStore } from '@/store/dataStore';
 import { useUIStore } from '@/store/uiStore';

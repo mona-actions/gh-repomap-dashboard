@@ -45,7 +45,9 @@ describe('ErrorBoundary', () => {
       screen.getByText('This component failed to render.'),
     ).toBeInTheDocument();
     expect(screen.getByText('💥 Boom')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /try again/i }),
+    ).toBeInTheDocument();
   });
 
   it('renders custom fallback when provided', () => {
@@ -56,12 +58,17 @@ describe('ErrorBoundary', () => {
     );
 
     expect(screen.getByText('Custom fallback')).toBeInTheDocument();
-    expect(screen.queryByText('This component failed to render.')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('This component failed to render.'),
+    ).not.toBeInTheDocument();
   });
 
   it.each([
     ['app', 'The application encountered an unexpected error.'],
-    ['view', 'This view encountered an error. Other parts of the app still work.'],
+    [
+      'view',
+      'This view encountered an error. Other parts of the app still work.',
+    ],
     ['widget', 'This component failed to render.'],
   ] as const)('shows correct message for level="%s"', (level, expected) => {
     renderWithTheme(

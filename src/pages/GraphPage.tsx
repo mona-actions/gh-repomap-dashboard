@@ -17,7 +17,12 @@ import { GraphLegend } from '@/components/graph/GraphLegend';
 import { NodeTooltip } from '@/components/graph/NodeTooltip';
 import { LayoutToggle, type LayoutMode } from '@/components/graph/LayoutToggle';
 import { FilterPanel } from '@/components/filters/FilterPanel';
-import { ErrorBoundary, ViewToggle, ExportMenu, type ViewMode } from '@/components/shared';
+import {
+  ErrorBoundary,
+  ViewToggle,
+  ExportMenu,
+  type ViewMode,
+} from '@/components/shared';
 import { useFilteredGraph } from '@/hooks/useFilteredGraph';
 import { useUIStore } from '@/store/uiStore';
 import { useDataStore } from '@/store/dataStore';
@@ -120,10 +125,7 @@ export default function GraphPage() {
           <GraphLegend />
 
           {/* Tooltip */}
-          <NodeTooltip
-            node={tooltipNode}
-            position={tooltipPos ?? undefined}
-          />
+          <NodeTooltip node={tooltipNode} position={tooltipPos ?? undefined} />
         </div>
       </div>
     </div>

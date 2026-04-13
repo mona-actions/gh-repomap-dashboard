@@ -93,7 +93,9 @@ export function GraphLegend() {
                 <li key={eco} className="graph-legend__item">
                   <span
                     className="graph-legend__line"
-                    style={{ backgroundColor: ECOSYSTEM_COLORS[eco] ?? '#8b949e' }}
+                    style={{
+                      backgroundColor: ECOSYSTEM_COLORS[eco] ?? '#8b949e',
+                    }}
                     aria-hidden="true"
                   />
                   <span className="graph-legend__label">
@@ -134,9 +136,7 @@ export function GraphLegend() {
                   className="graph-legend__node graph-legend__node--phantom"
                   aria-hidden="true"
                 />
-                <span className="graph-legend__label">
-                  Phantom (unscanned)
-                </span>
+                <span className="graph-legend__label">Phantom (unscanned)</span>
               </li>
               <li className="graph-legend__item">
                 <span

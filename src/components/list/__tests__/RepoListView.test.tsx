@@ -164,7 +164,9 @@ describe('RepoListView', () => {
     render(<RepoListView />);
 
     // Initially sorted by name ascending
-    const nameHeader = screen.getByText('Repository').closest('[role="columnheader"]');
+    const nameHeader = screen
+      .getByText('Repository')
+      .closest('[role="columnheader"]');
     expect(nameHeader).toHaveAttribute('aria-sort', 'ascending');
 
     // Click Dependents header

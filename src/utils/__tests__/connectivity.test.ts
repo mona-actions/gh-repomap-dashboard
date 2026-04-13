@@ -169,10 +169,7 @@ describe('enrichCluster', () => {
     const graph = new MultiDirectedGraph();
     graph.addNode('org/a', { isPhantom: false, org: 'org', archived: false });
 
-    const result = enrichCluster(
-      { id: 42, repos: ['org/a'], size: 1 },
-      graph,
-    );
+    const result = enrichCluster({ id: 42, repos: ['org/a'], size: 1 }, graph);
 
     expect(result.id).toBe(42);
     expect(result.size).toBe(1);

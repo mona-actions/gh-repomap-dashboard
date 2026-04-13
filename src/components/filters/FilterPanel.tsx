@@ -53,9 +53,8 @@ export function FilterPanel({
 
       {/* Filter summary */}
       <div className="filter-panel__summary" role="status" aria-live="polite">
-        Showing {visibleNodes.toLocaleString()} of{' '}
-        {totalNodes.toLocaleString()} repos, {visibleEdges.toLocaleString()}{' '}
-        edges
+        Showing {visibleNodes.toLocaleString()} of {totalNodes.toLocaleString()}{' '}
+        repos, {visibleEdges.toLocaleString()} edges
       </div>
 
       <div className="filter-panel__sections">

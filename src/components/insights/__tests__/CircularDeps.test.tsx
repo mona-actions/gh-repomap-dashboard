@@ -126,9 +126,7 @@ describe('CircularDeps', () => {
 
     renderWithTheme(<CircularDeps />);
 
-    expect(
-      screen.getByText(/Repo Groups \(Strong\)/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Repo Groups \(Strong\)/)).toBeInTheDocument();
   });
 
   it('click repo opens detail', async () => {

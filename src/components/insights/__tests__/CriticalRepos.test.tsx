@@ -93,7 +93,9 @@ describe('CriticalRepos', () => {
     useDataStore.setState({ stats: null });
     renderWithTheme(<CriticalRepos />);
 
-    expect(screen.getByText(/No dependency data available/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/No dependency data available/),
+    ).toBeInTheDocument();
   });
 
   it('renders bar indicators', () => {

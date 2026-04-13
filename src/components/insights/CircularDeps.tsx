@@ -42,10 +42,15 @@ export function CircularDeps() {
       </div>
 
       <p className="circular-deps__description">
-        These cycles are Repo Groups (Strong): each repo can reach the others by following dependency direction. Resolve them for clean migration ordering.
+        These cycles are Repo Groups (Strong): each repo can reach the others by
+        following dependency direction. Resolve them for clean migration
+        ordering.
       </p>
 
-      <ul className="circular-deps__list" aria-label="Circular dependency cycles">
+      <ul
+        className="circular-deps__list"
+        aria-label="Circular dependency cycles"
+      >
         {cycles.map((cycle, i) => (
           <li key={i} className="circular-deps__cycle">
             <span className="circular-deps__cycle-label">Cycle {i + 1}:</span>

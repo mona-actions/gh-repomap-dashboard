@@ -122,7 +122,9 @@ export function UploadPage() {
           aria-label="URL to JSON file"
           placeholder="Paste a URL to a JSON file..."
           value={url}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setUrl(e.target.value)
+          }
           style={{ flex: 1 }}
           leadingVisual={LinkExternalIcon}
         />

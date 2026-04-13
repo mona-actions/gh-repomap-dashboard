@@ -27,9 +27,7 @@ describe('DepTypeChart', () => {
   });
 
   it('renders a <title> element for accessibility', () => {
-    const { container } = render(
-      <DepTypeChart typeCounts={mockTypeCounts} />,
-    );
+    const { container } = render(<DepTypeChart typeCounts={mockTypeCounts} />);
 
     const title = container.querySelector('svg title');
     expect(title).toBeInTheDocument();
@@ -37,9 +35,7 @@ describe('DepTypeChart', () => {
   });
 
   it('renders a <desc> element with type counts', () => {
-    const { container } = render(
-      <DepTypeChart typeCounts={mockTypeCounts} />,
-    );
+    const { container } = render(<DepTypeChart typeCounts={mockTypeCounts} />);
 
     const desc = container.querySelector('svg desc');
     expect(desc).toBeInTheDocument();
@@ -59,9 +55,7 @@ describe('DepTypeChart', () => {
   });
 
   it('renders bars in descending count order', () => {
-    const { container } = render(
-      <DepTypeChart typeCounts={mockTypeCounts} />,
-    );
+    const { container } = render(<DepTypeChart typeCounts={mockTypeCounts} />);
 
     const groups = container.querySelectorAll('g[data-testid^="dep-bar-"]');
     const types = Array.from(groups).map(
@@ -69,7 +63,13 @@ describe('DepTypeChart', () => {
     );
 
     // Should be sorted by count descending
-    expect(types).toEqual(['workflow', 'action', 'package', 'submodule', 'docker']);
+    expect(types).toEqual([
+      'workflow',
+      'action',
+      'package',
+      'submodule',
+      'docker',
+    ]);
   });
 
   it('renders count text for each type', () => {

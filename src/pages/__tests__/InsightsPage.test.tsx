@@ -41,9 +41,7 @@ describe('InsightsPage connectivity tabs', () => {
     seedStats();
     render(<InsightsPage />);
 
-    await user.click(
-      screen.getByRole('tab', { name: 'Repo Groups (Weak)' }),
-    );
+    await user.click(screen.getByRole('tab', { name: 'Repo Groups (Weak)' }));
 
     expect(
       screen.getByText('Connectivity Group Comparison'),
@@ -54,9 +52,7 @@ describe('InsightsPage connectivity tabs', () => {
       within(weakSummary).getByText('Largest group: 3 scanned'),
     ).toBeInTheDocument();
 
-    await user.click(
-      screen.getByRole('tab', { name: 'Repo Groups (Strong)' }),
-    );
+    await user.click(screen.getByRole('tab', { name: 'Repo Groups (Strong)' }));
 
     expect(
       screen.getByRole('heading', {
@@ -68,9 +64,7 @@ describe('InsightsPage connectivity tabs', () => {
         name: 'Migration Cohort Guidance (SCC-based)',
       }),
     ).toBeInTheDocument();
-    const strongSummary = screen.getByLabelText(
-      'Repo Groups (Strong) summary',
-    );
+    const strongSummary = screen.getByLabelText('Repo Groups (Strong) summary');
     expect(
       within(strongSummary).getByText('Largest group: 2 scanned'),
     ).toBeInTheDocument();

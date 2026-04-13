@@ -41,9 +41,7 @@ export function CriticalRepos() {
   if (items.length === 0) {
     return (
       <div className="critical-repos">
-        <p className="critical-repos__empty">
-          No dependency data available.
-        </p>
+        <p className="critical-repos__empty">No dependency data available.</p>
       </div>
     );
   }
@@ -65,13 +63,18 @@ export function CriticalRepos() {
         </div>
       </div>
 
-      <table className="critical-repos__table" aria-label="Critical repositories">
+      <table
+        className="critical-repos__table"
+        aria-label="Critical repositories"
+      >
         <thead>
           <tr>
             <th scope="col">#</th>
             <th scope="col">Repository</th>
             <th scope="col">Dependents</th>
-            <th scope="col" aria-label="Impact bar">Impact</th>
+            <th scope="col" aria-label="Impact bar">
+              Impact
+            </th>
           </tr>
         </thead>
         <tbody>

@@ -50,9 +50,7 @@ export default function DashboardPage() {
             >
               Dependency Types
             </h2>
-            <DepTypeChart
-              typeCounts={stats?.dependency_type_counts ?? {}}
-            />
+            <DepTypeChart typeCounts={stats?.dependency_type_counts ?? {}} />
           </section>
 
           <section aria-labelledby="dashboard-critical-heading">

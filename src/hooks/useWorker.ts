@@ -90,9 +90,7 @@ export function useLayoutWorker() {
 
   const computeCircularLayout = useCallback(
     async (
-      serializedGraph: Parameters<
-        LayoutWorkerApi['computeCircularLayout']
-      >[0],
+      serializedGraph: Parameters<LayoutWorkerApi['computeCircularLayout']>[0],
     ) => {
       if (!apiRef.current) throw new Error('Worker not initialized');
       return apiRef.current.computeCircularLayout(serializedGraph);

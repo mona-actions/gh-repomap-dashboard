@@ -33,9 +33,7 @@ describe('SearchInput', () => {
   it('renders with search label for a11y', () => {
     renderWithRouter(<SearchInput />);
 
-    expect(
-      screen.getByLabelText('Search repositories'),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Search repositories')).toBeInTheDocument();
   });
 
   it('updates local value immediately on typing', async () => {
@@ -141,9 +139,7 @@ describe('ActiveFilters', () => {
 
     renderWithRouter(<ActiveFilters />);
 
-    expect(
-      screen.getByText('Search: "api-service"'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Search: "api-service"')).toBeInTheDocument();
   });
 
   it('shows dep type filter chips', () => {

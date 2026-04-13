@@ -6,7 +6,10 @@ import { SkipLink } from '../SkipLink';
 import { ViewToggle } from '../ViewToggle';
 import { EmptyState } from '../EmptyState';
 import { ConfidenceIndicator } from '../ConfidenceIndicator';
-import { DependencyTypeBadge, type DependencyType } from '../DependencyTypeBadge';
+import {
+  DependencyTypeBadge,
+  type DependencyType,
+} from '../DependencyTypeBadge';
 
 /* ---------- helpers ---------- */
 
@@ -83,11 +86,16 @@ describe('ViewToggle', () => {
 describe('EmptyState', () => {
   it('renders title and description', () => {
     renderWithTheme(
-      <EmptyState title="No data loaded" description="Upload a JSON file to get started." />,
+      <EmptyState
+        title="No data loaded"
+        description="Upload a JSON file to get started."
+      />,
     );
 
     expect(screen.getByText('No data loaded')).toBeInTheDocument();
-    expect(screen.getByText('Upload a JSON file to get started.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Upload a JSON file to get started.'),
+    ).toBeInTheDocument();
   });
 
   it('renders an optional action element', () => {
@@ -99,13 +107,13 @@ describe('EmptyState', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: 'Clear filters' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Clear filters' }),
+    ).toBeInTheDocument();
   });
 
   it('renders without action when not provided', () => {
-    renderWithTheme(
-      <EmptyState title="Empty" description="Nothing here." />,
-    );
+    renderWithTheme(<EmptyState title="Empty" description="Nothing here." />);
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
