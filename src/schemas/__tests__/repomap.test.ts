@@ -127,9 +127,7 @@ function createValidFixture(): Record<string, unknown> {
       ],
     },
     stats: {
-      most_depended_on: [
-        { repo: 'my-org/shared-lib', direct_dependents: 42 },
-      ],
+      most_depended_on: [{ repo: 'my-org/shared-lib', direct_dependents: 42 }],
       dependency_type_counts: {
         package: 150,
         workflow: 30,
@@ -421,9 +419,7 @@ describe('DependencyDetailSchema (discriminated union)', () => {
     });
     expect(result.success).toBe(true);
     if (result.success && result.data.type === 'workflow') {
-      expect(result.data.uses).toBe(
-        'org/repo/.github/workflows/ci.yml@main',
-      );
+      expect(result.data.uses).toBe('org/repo/.github/workflows/ci.yml@main');
     }
   });
 
@@ -453,13 +449,24 @@ describe('DependencyDetailSchema (discriminated union)', () => {
   });
 
   it('narrows type correctly for all 7 dependency types', () => {
-    const testCases: Array<{ input: Record<string, unknown>; expectedType: string }> = [
+    const testCases: Array<{
+      input: Record<string, unknown>;
+      expectedType: string;
+    }> = [
       {
-        input: { type: 'package', package_name: 'x', ecosystem: 'npm', version: '1' },
+        input: {
+          type: 'package',
+          package_name: 'x',
+          ecosystem: 'npm',
+          version: '1',
+        },
         expectedType: 'package',
       },
       {
-        input: { type: 'workflow', uses: 'org/repo/.github/workflows/ci.yml@main' },
+        input: {
+          type: 'workflow',
+          uses: 'org/repo/.github/workflows/ci.yml@main',
+        },
         expectedType: 'workflow',
       },
       {
@@ -467,7 +474,11 @@ describe('DependencyDetailSchema (discriminated union)', () => {
         expectedType: 'action',
       },
       {
-        input: { type: 'submodule', url: 'https://example.com/repo.git', path: 'vendor/lib' },
+        input: {
+          type: 'submodule',
+          url: 'https://example.com/repo.git',
+          path: 'vendor/lib',
+        },
         expectedType: 'submodule',
       },
       {
@@ -623,6 +634,20 @@ describe('RepoNodeSchema', () => {
     }
   });
 
+  it('coerces null direct and transitive to empty arrays', () => {
+    const result = RepoNodeSchema.safeParse({
+      scan_status: { sbom: 'done', filescan: 'done' },
+      annotations: { fork_of: null, template_from: null, archived: false },
+      direct: null,
+      transitive: null,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.direct).toEqual([]);
+      expect(result.data.transitive).toEqual([]);
+    }
+  });
+
   it('preserves unknown fields via passthrough', () => {
     const result = RepoNodeSchema.parse({
       scan_status: { sbom: 'done', filescan: 'done' },
@@ -687,6 +712,26 @@ describe('StatsSchema', () => {
       expect(result.data.orphan_repos).toEqual([]);
     }
   });
+
+  it('coerces null arrays and records to empty defaults', () => {
+    const result = StatsSchema.safeParse({
+      most_depended_on: null,
+      dependency_type_counts: null,
+      clusters: null,
+      strong_clusters: null,
+      circular_deps: null,
+      orphan_repos: null,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.most_depended_on).toEqual([]);
+      expect(result.data.dependency_type_counts).toEqual({});
+      expect(result.data.clusters).toEqual([]);
+      expect(result.data.strong_clusters).toEqual([]);
+      expect(result.data.circular_deps).toEqual([]);
+      expect(result.data.orphan_repos).toEqual([]);
+    }
+  });
 });
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -721,6 +766,18 @@ describe('OutputSchema', () => {
     const fixture = createValidFixture();
     delete fixture.graph;
     delete fixture.unresolved;
+    const result = OutputSchema.safeParse(fixture);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.graph).toEqual({});
+      expect(result.data.unresolved).toEqual({});
+    }
+  });
+
+  it('coerces null graph and unresolved to empty objects', () => {
+    const fixture = createValidFixture();
+    fixture.graph = null as unknown as typeof fixture.graph;
+    fixture.unresolved = null as unknown as typeof fixture.unresolved;
     const result = OutputSchema.safeParse(fixture);
     expect(result.success).toBe(true);
     if (result.success) {
