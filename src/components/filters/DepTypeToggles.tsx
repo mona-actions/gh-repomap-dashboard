@@ -42,7 +42,11 @@ export function DepTypeToggles() {
               aria-pressed={depTypes.includes(key)}
               style={
                 depTypes.includes(key)
-                  ? { backgroundColor: color, borderColor: color, color: '#fff' }
+                  ? {
+                      backgroundColor: color,
+                      borderColor: color,
+                      color: '#fff',
+                    }
                   : { borderColor: color, color }
               }
             >

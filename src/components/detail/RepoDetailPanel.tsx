@@ -118,7 +118,8 @@ export function RepoDetailPanel() {
 
   // Compute tab counts
   const tabCounts = useMemo(() => {
-    if (!selectedRepo) return { direct: 0, transitive: 0, dependents: 0, unresolved: 0 };
+    if (!selectedRepo)
+      return { direct: 0, transitive: 0, dependents: 0, unresolved: 0 };
 
     const graph = useDataStore.getState().graph;
     const unresolved = useDataStore.getState().unresolved;
@@ -234,7 +235,11 @@ export function RepoDetailPanel() {
         </header>
 
         {/* Tab bar */}
-        <div className="detail-panel__tabs" role="tablist" aria-label="Detail tabs">
+        <div
+          className="detail-panel__tabs"
+          role="tablist"
+          aria-label="Detail tabs"
+        >
           {tabs.map((tab) => (
             <button
               key={tab.id}

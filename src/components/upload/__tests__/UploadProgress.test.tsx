@@ -94,9 +94,7 @@ describe('UploadProgress', () => {
   });
 
   it('does not show progress bar in error state', () => {
-    renderWithTheme(
-      <UploadProgress stage="error" error="fail" />,
-    );
+    renderWithTheme(<UploadProgress stage="error" error="fail" />);
     expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
 });

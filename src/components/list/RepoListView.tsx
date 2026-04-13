@@ -140,7 +140,10 @@ export function RepoListView() {
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const rows = useMemo(() => extractRepoRows(), [searchQuery, selectedOrgs, showArchived]);
+  const rows = useMemo(
+    () => extractRepoRows(),
+    [searchQuery, selectedOrgs, showArchived],
+  );
 
   const sortedRows = useMemo(() => {
     if (sort.direction === 'none') return rows;
@@ -182,12 +185,48 @@ export function RepoListView() {
       >
         {/* Flex-based header row */}
         <div className="repo-list-view__header" role="row" aria-rowindex={1}>
-          <SortableHeader column="name" label="Repository" sort={sort} onSort={handleSort} width={COLUMN_WIDTHS.name} />
-          <SortableHeader column="org" label="Org" sort={sort} onSort={handleSort} width={COLUMN_WIDTHS.org} />
-          <SortableHeader column="directDeps" label="Direct Deps" sort={sort} onSort={handleSort} width={COLUMN_WIDTHS.directDeps} />
-          <SortableHeader column="dependents" label="Dependents" sort={sort} onSort={handleSort} width={COLUMN_WIDTHS.dependents} />
-          <SortableHeader column="types" label="Types" sort={sort} onSort={handleSort} width={COLUMN_WIDTHS.types} />
-          <SortableHeader column="status" label="Status" sort={sort} onSort={handleSort} width={COLUMN_WIDTHS.status} />
+          <SortableHeader
+            column="name"
+            label="Repository"
+            sort={sort}
+            onSort={handleSort}
+            width={COLUMN_WIDTHS.name}
+          />
+          <SortableHeader
+            column="org"
+            label="Org"
+            sort={sort}
+            onSort={handleSort}
+            width={COLUMN_WIDTHS.org}
+          />
+          <SortableHeader
+            column="directDeps"
+            label="Direct Deps"
+            sort={sort}
+            onSort={handleSort}
+            width={COLUMN_WIDTHS.directDeps}
+          />
+          <SortableHeader
+            column="dependents"
+            label="Dependents"
+            sort={sort}
+            onSort={handleSort}
+            width={COLUMN_WIDTHS.dependents}
+          />
+          <SortableHeader
+            column="types"
+            label="Types"
+            sort={sort}
+            onSort={handleSort}
+            width={COLUMN_WIDTHS.types}
+          />
+          <SortableHeader
+            column="status"
+            label="Status"
+            sort={sort}
+            onSort={handleSort}
+            width={COLUMN_WIDTHS.status}
+          />
         </div>
 
         {/* Virtualized rows */}

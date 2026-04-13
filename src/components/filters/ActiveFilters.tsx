@@ -24,8 +24,7 @@ export function ActiveFilters() {
   for (const org of selectedOrgs) {
     chips.push({
       label: `Org: ${org}`,
-      onRemove: () =>
-        setSelectedOrgs(selectedOrgs.filter((o) => o !== org)),
+      onRemove: () => setSelectedOrgs(selectedOrgs.filter((o) => o !== org)),
     });
   }
 

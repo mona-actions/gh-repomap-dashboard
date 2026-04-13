@@ -83,7 +83,11 @@ export function OrgFilter() {
       </button>
 
       {isOpen && (
-        <div className="org-filter__dropdown" role="listbox" aria-label="Organizations">
+        <div
+          className="org-filter__dropdown"
+          role="listbox"
+          aria-label="Organizations"
+        >
           {/* Search within dropdown */}
           {allOrgs.length > 5 && (
             <div className="org-filter__search">

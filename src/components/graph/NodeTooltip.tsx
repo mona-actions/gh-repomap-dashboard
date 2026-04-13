@@ -24,7 +24,10 @@ export function NodeTooltip({ node, position }: NodeTooltipProps) {
   const org = attrs.org as string;
   const directDeps = (attrs.directDeps as number) ?? 0;
   const dependents = (attrs.dependents as number) ?? 0;
-  const scanStatusRaw = attrs.scanStatus as Record<string, string> | string | undefined;
+  const scanStatusRaw = attrs.scanStatus as
+    | Record<string, string>
+    | string
+    | undefined;
   const scanStatusLabel =
     typeof scanStatusRaw === 'string'
       ? scanStatusRaw
@@ -76,9 +79,7 @@ export function NodeTooltip({ node, position }: NodeTooltipProps) {
       </div>
 
       <div className="node-tooltip__meta">
-        <span className="node-tooltip__status">
-          Scan: {scanStatusLabel}
-        </span>
+        <span className="node-tooltip__status">Scan: {scanStatusLabel}</span>
         {isPhantom && (
           <span className="node-tooltip__badge node-tooltip__badge--phantom">
             Phantom

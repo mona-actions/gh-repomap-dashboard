@@ -34,9 +34,7 @@ describe('ClusterSelect terminology', () => {
   it('renders weak-group labels and helper copy', () => {
     render(<ClusterSelect />);
 
-    expect(
-      screen.getByText('Repo Group (Weak)'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Repo Group (Weak)')).toBeInTheDocument();
     expect(
       screen.getByText(
         'Ignores dependency direction; may include external/unscanned repos.',
@@ -50,7 +48,9 @@ describe('ClusterSelect terminology', () => {
   it('renders options with connected repo group naming', () => {
     render(<ClusterSelect />);
 
-    expect(screen.getByRole('option', { name: 'All connected repo groups' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: 'All connected repo groups' }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('option', {
         name: 'Repo Group 1 (2 scanned)',

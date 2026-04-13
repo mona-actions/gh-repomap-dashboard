@@ -109,7 +109,7 @@ function buildGraph(data: OutputData): MultiDirectedGraph {
         // for other types the type itself IS the ecosystem
         const ecosystem =
           dep.detail.type === 'package'
-            ? (dep.detail.ecosystem || 'unknown-package')
+            ? dep.detail.ecosystem || 'unknown-package'
             : dep.type;
 
         graph.addEdgeWithKey(edgeKey, fullName, dep.repo, {
@@ -212,10 +212,7 @@ export function mergeAndProcess(jsonTexts: string[]): ProcessResult {
         // Merge dependency arrays, deduplicating by repo:type
         mergedGraph[key] = {
           ...mergedGraph[key],
-          direct: deduplicateDeps([
-            ...mergedGraph[key].direct,
-            ...node.direct,
-          ]),
+          direct: deduplicateDeps([...mergedGraph[key].direct, ...node.direct]),
         };
       } else {
         mergedGraph[key] = node;

@@ -13,10 +13,21 @@ function renderWithTheme(ui: React.ReactElement) {
 function buildGraph(): MultiDirectedGraph {
   const graph = new MultiDirectedGraph();
   graph.addNode('org/repo-a', { org: 'org', label: 'repo-a', archived: false });
-  graph.addNode('org/repo-b', { org: 'org', label: 'repo-b', archived: true, hidden: true });
+  graph.addNode('org/repo-b', {
+    org: 'org',
+    label: 'repo-b',
+    archived: true,
+    hidden: true,
+  });
   graph.addNode('org/repo-c', { org: 'org', label: 'repo-c', archived: false });
-  graph.addEdge('org/repo-a', 'org/repo-c', { depType: 'package', hidden: false });
-  graph.addEdge('org/repo-a', 'org/repo-b', { depType: 'workflow', hidden: true });
+  graph.addEdge('org/repo-a', 'org/repo-c', {
+    depType: 'package',
+    hidden: false,
+  });
+  graph.addEdge('org/repo-a', 'org/repo-b', {
+    depType: 'workflow',
+    hidden: true,
+  });
   return graph;
 }
 
@@ -99,6 +110,8 @@ describe('ExportMenu', () => {
 
   it('has accessible group label', () => {
     renderWithTheme(<ExportMenu />);
-    expect(screen.getByRole('group', { name: 'Export options' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('group', { name: 'Export options' }),
+    ).toBeInTheDocument();
   });
 });

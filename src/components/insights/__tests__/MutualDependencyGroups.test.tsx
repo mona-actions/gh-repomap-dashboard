@@ -24,17 +24,13 @@ describe('MutualDependencyGroups', () => {
 
     render(<MutualDependencyGroups />);
 
-    expect(
-      screen.getByText('Repo Groups (Strong) (1)'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Repo Groups (Strong) (1)')).toBeInTheDocument();
     expect(
       screen.getByText(
         /Strong groups follow dependency direction. Repos in the same group are mutually dependent/,
       ),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Repo Group 2 \(Strong\)/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Repo Group 2 \(Strong\)/)).toBeInTheDocument();
   });
 
   it('supports focus and drill-down interaction', async () => {

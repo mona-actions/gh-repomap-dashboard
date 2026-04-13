@@ -66,58 +66,41 @@ describe('NodeTooltip', () => {
   });
 
   it('renders nothing when position is missing', () => {
-    const { container } = render(
-      <NodeTooltip node="acme-corp/api-server" />,
-    );
+    const { container } = render(<NodeTooltip node="acme-corp/api-server" />);
     expect(container.innerHTML).toBe('');
   });
 
   it('shows repo name when visible', () => {
     render(
-      <NodeTooltip
-        node="acme-corp/api-server"
-        position={{ x: 100, y: 100 }}
-      />,
+      <NodeTooltip node="acme-corp/api-server" position={{ x: 100, y: 100 }} />,
     );
     expect(screen.getByText('acme-corp/api-server')).toBeInTheDocument();
   });
 
   it('shows org name', () => {
     render(
-      <NodeTooltip
-        node="acme-corp/api-server"
-        position={{ x: 100, y: 100 }}
-      />,
+      <NodeTooltip node="acme-corp/api-server" position={{ x: 100, y: 100 }} />,
     );
     expect(screen.getByText('acme-corp')).toBeInTheDocument();
   });
 
   it('displays correct direct deps count', () => {
     render(
-      <NodeTooltip
-        node="acme-corp/api-server"
-        position={{ x: 100, y: 100 }}
-      />,
+      <NodeTooltip node="acme-corp/api-server" position={{ x: 100, y: 100 }} />,
     );
     expect(screen.getByText('12')).toBeInTheDocument();
   });
 
   it('displays correct dependents count', () => {
     render(
-      <NodeTooltip
-        node="acme-corp/api-server"
-        position={{ x: 100, y: 100 }}
-      />,
+      <NodeTooltip node="acme-corp/api-server" position={{ x: 100, y: 100 }} />,
     );
     expect(screen.getByText('45')).toBeInTheDocument();
   });
 
   it('shows scan status', () => {
     render(
-      <NodeTooltip
-        node="acme-corp/api-server"
-        position={{ x: 100, y: 100 }}
-      />,
+      <NodeTooltip node="acme-corp/api-server" position={{ x: 100, y: 100 }} />,
     );
     expect(screen.getByText('Scan: done')).toBeInTheDocument();
   });
@@ -144,30 +127,21 @@ describe('NodeTooltip', () => {
 
   it('does not show phantom badge for non-phantom nodes', () => {
     render(
-      <NodeTooltip
-        node="acme-corp/api-server"
-        position={{ x: 100, y: 100 }}
-      />,
+      <NodeTooltip node="acme-corp/api-server" position={{ x: 100, y: 100 }} />,
     );
     expect(screen.queryByText('Phantom')).not.toBeInTheDocument();
   });
 
   it('has tooltip role', () => {
     render(
-      <NodeTooltip
-        node="acme-corp/api-server"
-        position={{ x: 100, y: 100 }}
-      />,
+      <NodeTooltip node="acme-corp/api-server" position={{ x: 100, y: 100 }} />,
     );
     expect(screen.getByRole('tooltip')).toBeInTheDocument();
   });
 
   it('renders nothing for non-existent node', () => {
     const { container } = render(
-      <NodeTooltip
-        node="nonexistent/repo"
-        position={{ x: 100, y: 100 }}
-      />,
+      <NodeTooltip node="nonexistent/repo" position={{ x: 100, y: 100 }} />,
     );
     expect(container.innerHTML).toBe('');
   });

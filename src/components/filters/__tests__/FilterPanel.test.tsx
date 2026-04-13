@@ -58,9 +58,7 @@ describe('FilterPanel', () => {
       />,
     );
     // Search
-    expect(
-      screen.getByLabelText('Search repositories'),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Search repositories')).toBeInTheDocument();
     // Dep types
     expect(screen.getByText('Dependency Types')).toBeInTheDocument();
     // Confidence
@@ -178,9 +176,10 @@ describe('ConfidenceToggle', () => {
       'aria-checked',
       'true',
     );
-    expect(
-      screen.getByRole('radio', { name: 'High only' }),
-    ).toHaveAttribute('aria-checked', 'false');
+    expect(screen.getByRole('radio', { name: 'High only' })).toHaveAttribute(
+      'aria-checked',
+      'false',
+    );
   });
 
   it('switches to high only when clicked', async () => {

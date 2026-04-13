@@ -91,9 +91,7 @@ describe('generate', () => {
     });
 
     // most_depended_on should be sorted by direct_dependents descending
-    const counts = data.stats.most_depended_on.map(
-      (m) => m.direct_dependents,
-    );
+    const counts = data.stats.most_depended_on.map((m) => m.direct_dependents);
     for (let i = 1; i < counts.length; i++) {
       expect(counts[i]).toBeLessThanOrEqual(counts[i - 1]);
     }

@@ -39,9 +39,7 @@ describe('AppHeader', () => {
 
   it('renders dark mode toggle button', () => {
     renderWithProviders(<AppHeader />);
-    expect(
-      screen.getByLabelText('Switch to dark mode'),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Switch to dark mode')).toBeInTheDocument();
   });
 
   it('toggles color mode when dark mode button is clicked', async () => {
@@ -54,9 +52,7 @@ describe('AppHeader', () => {
 
     // After click: dark mode → button says "Switch to light mode"
     expect(useUIStore.getState().colorMode).toBe('dark');
-    expect(
-      screen.getByLabelText('Switch to light mode'),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Switch to light mode')).toBeInTheDocument();
   });
 
   it('toggles back from dark to light', async () => {
@@ -72,8 +68,6 @@ describe('AppHeader', () => {
 
   it('does not show sidebar toggle when no data is loaded', () => {
     renderWithProviders(<AppHeader />);
-    expect(
-      screen.queryByLabelText('Toggle sidebar'),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Toggle sidebar')).not.toBeInTheDocument();
   });
 });

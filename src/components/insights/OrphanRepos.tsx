@@ -25,7 +25,8 @@ export function OrphanRepos() {
     return (
       <div className="orphan-repos">
         <p className="orphan-repos__empty">
-          No orphan repositories. All repos have at least one dependency connection.
+          No orphan repositories. All repos have at least one dependency
+          connection.
         </p>
       </div>
     );

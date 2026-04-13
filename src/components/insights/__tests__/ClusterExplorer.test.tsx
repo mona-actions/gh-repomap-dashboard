@@ -34,17 +34,13 @@ describe('ClusterExplorer terminology', () => {
 
     render(<ClusterExplorer />);
 
-    expect(
-      screen.getByText('Repo Groups (Weak) (1)'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Repo Groups (Weak) (1)')).toBeInTheDocument();
     expect(
       screen.getByText(
         'Weak groups ignore dependency direction, so they are useful for migration planning and blast-radius sizing.',
       ),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Repo Group 3 \(Weak\)/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Repo Group 3 \(Weak\)/)).toBeInTheDocument();
     expect(screen.getByText(/2 repos/)).toBeInTheDocument();
   });
 
@@ -97,10 +93,10 @@ describe('ClusterExplorer terminology', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Focus Group' })[0]);
 
+    expect(screen.queryByText(/Repo Group 2 \(Weak\)/)).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Repo Group 2 \(Weak\)/),
-    ).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Show all groups' })).toBeInTheDocument();
+      screen.getByRole('button', { name: 'Show all groups' }),
+    ).toBeInTheDocument();
   });
 
   it('shows updated empty state copy', () => {

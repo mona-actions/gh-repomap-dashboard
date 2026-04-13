@@ -6,7 +6,10 @@
  * Clicking a dependency navigates to that repo's detail panel.
  */
 import { useMemo, useCallback } from 'react';
-import { DependencyTypeBadge, type DependencyType } from '@/components/shared/DependencyTypeBadge';
+import {
+  DependencyTypeBadge,
+  type DependencyType,
+} from '@/components/shared/DependencyTypeBadge';
 import { ConfidenceIndicator } from '@/components/shared/ConfidenceIndicator';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useDataStore } from '@/store/dataStore';

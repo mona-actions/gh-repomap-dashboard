@@ -157,7 +157,9 @@ export function UploadProgress({
       {/* Error state */}
       {isError && error && (
         <Flash variant="danger" data-testid="upload-error">
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+          <div
+            style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}
+          >
             <XCircleFillIcon size={16} />
             <div>
               <strong style={{ display: 'block' }}>Processing failed</strong>

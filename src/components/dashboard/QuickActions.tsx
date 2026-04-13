@@ -50,11 +50,7 @@ export function QuickActions() {
   return (
     <nav className="quick-actions" aria-label="Quick actions">
       {ACTIONS.map((action) => (
-        <Link
-          key={action.label}
-          to={action.to}
-          className="quick-action"
-        >
+        <Link key={action.label} to={action.to} className="quick-action">
           <div className="quick-action__icon">
             <action.icon size={20} />
           </div>

@@ -30,9 +30,7 @@ describe('App', () => {
 
   it('renders the upload page when no data is loaded', () => {
     render(<App />);
-    expect(
-      screen.getByText(/upload a.*json file/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/upload a.*json file/i)).toBeInTheDocument();
   });
 
   it('renders the skip link', () => {

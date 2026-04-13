@@ -142,7 +142,9 @@ describe('useDataLoader', () => {
 
       let success: boolean | undefined;
       await act(async () => {
-        success = await result.current.loadFromUrl('https://example.com/data.json');
+        success = await result.current.loadFromUrl(
+          'https://example.com/data.json',
+        );
       });
 
       expect(success).toBe(true);
@@ -173,9 +175,7 @@ describe('useDataLoader', () => {
     });
 
     it('handles network errors', async () => {
-      globalThis.fetch = vi.fn().mockRejectedValue(
-        new Error('Network error'),
-      );
+      globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
       const { result } = renderHook(() => useDataLoader());
 

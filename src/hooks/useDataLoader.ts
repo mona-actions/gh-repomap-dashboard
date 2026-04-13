@@ -64,9 +64,7 @@ export function useDataLoader() {
         loadFromProcessResult(result);
         return true;
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to fetch URL',
-        );
+        setError(err instanceof Error ? err.message : 'Failed to fetch URL');
         setLoadingStage('error');
         return false;
       }
@@ -98,9 +96,7 @@ export function useDataLoader() {
       loadFromProcessResult(result);
       return true;
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to load demo data',
-      );
+      setError(err instanceof Error ? err.message : 'Failed to load demo data');
       setLoadingStage('error');
       return false;
     }

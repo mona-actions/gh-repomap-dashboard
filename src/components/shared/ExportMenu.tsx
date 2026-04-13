@@ -125,9 +125,7 @@ export function ExportMenu() {
       });
 
       const escapeCsv = (s: string) =>
-        s.includes(',') || s.includes('"')
-          ? `"${s.replace(/"/g, '""')}"`
-          : s;
+        s.includes(',') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
 
       rows.push(
         [

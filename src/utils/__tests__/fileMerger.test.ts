@@ -58,7 +58,10 @@ function makeDep(
       confidence: 'high' as const,
       target_scanned: true,
       source_file: '.github/workflows/ci.yml',
-      detail: { type: 'workflow', uses: `${repo}/.github/workflows/ci.yml@main` },
+      detail: {
+        type: 'workflow',
+        uses: `${repo}/.github/workflows/ci.yml@main`,
+      },
     };
   }
   return {
@@ -224,9 +227,7 @@ describe('mergeFiles', () => {
 
     const result = mergeFiles([file1, file2]);
 
-    expect(result.merged.metadata.generated_at).toBe(
-      '2024-01-01T00:30:00Z',
-    );
+    expect(result.merged.metadata.generated_at).toBe('2024-01-01T00:30:00Z');
   });
 
   it('sums total_repos_scanned and total_repos_skipped', () => {
@@ -302,9 +303,7 @@ describe('mergeFiles', () => {
     const result = mergeFiles([file1, file2]);
 
     // Mutating the result should not affect the input
-    result.merged.graph['org-a/repo-1'].direct.push(
-      makeDep('org-a/mutated'),
-    );
+    result.merged.graph['org-a/repo-1'].direct.push(makeDep('org-a/mutated'));
     expect(file1.graph['org-a/repo-1'].direct).toHaveLength(1);
   });
 });

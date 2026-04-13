@@ -43,10 +43,11 @@ export function ClusterSelect() {
       >
         <option value="">All connected repo groups</option>
         {enriched.map((c, idx) => (
-            <option key={c.id ?? idx} value={c.id ?? idx}>
-              Repo Group {c.id ?? idx + 1} ({c.scannedCount} scanned{c.externalCount > 0 ? `, ${c.size} total` : ''})
-            </option>
-          ))}
+          <option key={c.id ?? idx} value={c.id ?? idx}>
+            Repo Group {c.id ?? idx + 1} ({c.scannedCount} scanned
+            {c.externalCount > 0 ? `, ${c.size} total` : ''})
+          </option>
+        ))}
       </select>
     </div>
   );

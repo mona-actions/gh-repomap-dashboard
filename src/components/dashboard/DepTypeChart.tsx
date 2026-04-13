@@ -53,8 +53,7 @@ export function DepTypeChart({ typeCounts }: DepTypeChartProps) {
         {entries.map(([type, count], i) => {
           const y = CHART_PADDING + i * (BAR_HEIGHT + BAR_GAP);
           const barMaxWidth = 500 - LABEL_WIDTH - COUNT_WIDTH - CHART_PADDING;
-          const barWidth =
-            maxCount > 0 ? (count / maxCount) * barMaxWidth : 0;
+          const barWidth = maxCount > 0 ? (count / maxCount) * barMaxWidth : 0;
           const color = DEP_TYPE_COLORS[type] ?? '#8b949e';
 
           return (

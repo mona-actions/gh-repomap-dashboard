@@ -2,7 +2,10 @@
  * Barrel export for graph components.
  */
 export { GraphContainer } from './GraphContainer';
-export type { GraphContainerProps, GraphControlMethods } from './GraphContainer';
+export type {
+  GraphContainerProps,
+  GraphControlMethods,
+} from './GraphContainer';
 export { GraphControls } from './GraphControls';
 export type { GraphControlsProps } from './GraphControls';
 export { GraphLegend } from './GraphLegend';

@@ -111,7 +111,11 @@ export function EcosystemToggles() {
               title={`${getEcosystemLabel(eco)}: ${count} edges`}
               style={
                 ecosystems.includes(eco)
-                  ? { backgroundColor: color, borderColor: color, color: '#fff' }
+                  ? {
+                      backgroundColor: color,
+                      borderColor: color,
+                      color: '#fff',
+                    }
                   : { borderColor: color, color }
               }
             >

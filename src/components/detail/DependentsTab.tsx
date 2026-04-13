@@ -5,7 +5,10 @@
  * Shows the edge type and source file for each dependent.
  */
 import { useMemo, useCallback } from 'react';
-import { DependencyTypeBadge, type DependencyType } from '@/components/shared/DependencyTypeBadge';
+import {
+  DependencyTypeBadge,
+  type DependencyType,
+} from '@/components/shared/DependencyTypeBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useDataStore } from '@/store/dataStore';
 import { useUIStore } from '@/store/uiStore';

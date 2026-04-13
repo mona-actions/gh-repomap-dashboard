@@ -45,7 +45,8 @@ function App() {
 
   // Map internal colorMode values to Primer ThemeProvider values.
   // Primer v38 uses 'day'/'night' instead of 'light'/'dark'.
-  const primerColorMode = colorMode === 'light' ? 'day' : colorMode === 'dark' ? 'night' : 'auto';
+  const primerColorMode =
+    colorMode === 'light' ? 'day' : colorMode === 'dark' ? 'night' : 'auto';
 
   return (
     <ThemeProvider colorMode={primerColorMode}>
@@ -57,7 +58,11 @@ function App() {
                 <Route
                   path="/"
                   element={
-                    hasData ? <Navigate to="/dashboard" replace /> : <UploadPage />
+                    hasData ? (
+                      <Navigate to="/dashboard" replace />
+                    ) : (
+                      <UploadPage />
+                    )
                   }
                 />
                 <Route

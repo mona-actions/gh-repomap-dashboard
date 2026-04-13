@@ -187,6 +187,8 @@ describe('StatsCards', () => {
       />,
     );
 
-    expect(screen.getByRole('region', { name: 'Summary statistics' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: 'Summary statistics' }),
+    ).toBeInTheDocument();
   });
 });
