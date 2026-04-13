@@ -1,7 +1,7 @@
 {
   "name": "gh-repomap-dashboard",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Static SPA dashboard for visualizing gh-repo-map JSON output — inter-repository dependency graphs at enterprise scale.",
   "scripts": {

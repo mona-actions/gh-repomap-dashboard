@@ -634,6 +634,20 @@ describe('RepoNodeSchema', () => {
     }
   });
 
+  it('coerces null direct and transitive to empty arrays', () => {
+    const result = RepoNodeSchema.safeParse({
+      scan_status: { sbom: 'done', filescan: 'done' },
+      annotations: { fork_of: null, template_from: null, archived: false },
+      direct: null,
+      transitive: null,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.direct).toEqual([]);
+      expect(result.data.transitive).toEqual([]);
+    }
+  });
+
   it('preserves unknown fields via passthrough', () => {
     const result = RepoNodeSchema.parse({
       scan_status: { sbom: 'done', filescan: 'done' },
@@ -698,6 +712,26 @@ describe('StatsSchema', () => {
       expect(result.data.orphan_repos).toEqual([]);
     }
   });
+
+  it('coerces null arrays and records to empty defaults', () => {
+    const result = StatsSchema.safeParse({
+      most_depended_on: null,
+      dependency_type_counts: null,
+      clusters: null,
+      strong_clusters: null,
+      circular_deps: null,
+      orphan_repos: null,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.most_depended_on).toEqual([]);
+      expect(result.data.dependency_type_counts).toEqual({});
+      expect(result.data.clusters).toEqual([]);
+      expect(result.data.strong_clusters).toEqual([]);
+      expect(result.data.circular_deps).toEqual([]);
+      expect(result.data.orphan_repos).toEqual([]);
+    }
+  });
 });
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -732,6 +766,18 @@ describe('OutputSchema', () => {
     const fixture = createValidFixture();
     delete fixture.graph;
     delete fixture.unresolved;
+    const result = OutputSchema.safeParse(fixture);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.graph).toEqual({});
+      expect(result.data.unresolved).toEqual({});
+    }
+  });
+
+  it('coerces null graph and unresolved to empty objects', () => {
+    const fixture = createValidFixture();
+    fixture.graph = null as unknown as typeof fixture.graph;
+    fixture.unresolved = null as unknown as typeof fixture.unresolved;
     const result = OutputSchema.safeParse(fixture);
     expect(result.success).toBe(true);
     if (result.success) {
