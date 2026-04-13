@@ -216,9 +216,12 @@ export const RepoNodeSchema = z
     /** Repository annotations (fork, template, archived). */
     annotations: AnnotationsSchema,
     /** Direct dependencies of this repo. Defaults to [] if missing or null. */
-    direct: z.preprocess(v => v ?? [], z.array(DirectDependencySchema)),
+    direct: z.preprocess((v) => v ?? [], z.array(DirectDependencySchema)),
     /** Transitive dependencies of this repo. Defaults to [] if missing or null. */
-    transitive: z.preprocess(v => v ?? [], z.array(TransitiveDependencySchema)),
+    transitive: z.preprocess(
+      (v) => v ?? [],
+      z.array(TransitiveDependencySchema),
+    ),
   })
   .passthrough();
 
@@ -261,17 +264,23 @@ export const ClusterSchema = z
 export const StatsSchema = z
   .object({
     /** Repos ranked by number of direct dependents (blast radius). */
-    most_depended_on: z.preprocess(v => v ?? [], z.array(MostDependedOnSchema)),
+    most_depended_on: z.preprocess(
+      (v) => v ?? [],
+      z.array(MostDependedOnSchema),
+    ),
     /** Count of edges by dependency type. */
-    dependency_type_counts: z.preprocess(v => v ?? {}, z.record(z.string(), z.number())),
+    dependency_type_counts: z.preprocess(
+      (v) => v ?? {},
+      z.record(z.string(), z.number()),
+    ),
     /** Repo Groups (Weak) — migration-oriented groups that ignore direction. */
-    clusters: z.preprocess(v => v ?? [], z.array(ClusterSchema)),
+    clusters: z.preprocess((v) => v ?? [], z.array(ClusterSchema)),
     /** Mutual dependency groups in the directed graph (strong connectivity). */
-    strong_clusters: z.preprocess(v => v ?? [], z.array(ClusterSchema)),
+    strong_clusters: z.preprocess((v) => v ?? [], z.array(ClusterSchema)),
     /** Circular dependency cycles that need attention. */
-    circular_deps: z.preprocess(v => v ?? [], z.array(z.array(z.string()))),
+    circular_deps: z.preprocess((v) => v ?? [], z.array(z.array(z.string()))),
     /** Repos with zero inbound or outbound edges. */
-    orphan_repos: z.preprocess(v => v ?? [], z.array(z.string())),
+    orphan_repos: z.preprocess((v) => v ?? [], z.array(z.string())),
   })
   .passthrough();
 
@@ -286,10 +295,10 @@ export const OutputSchema = z
     /** Scan context, timing, and file-split metadata. */
     metadata: MetadataSchema,
     /** Map of "org/repo" → RepoNode. The core dependency graph. */
-    graph: z.preprocess(v => v ?? {}, z.record(z.string(), RepoNodeSchema)),
+    graph: z.preprocess((v) => v ?? {}, z.record(z.string(), RepoNodeSchema)),
     /** Map of "org/repo" → unresolved packages for that repo. */
     unresolved: z.preprocess(
-      v => v ?? {},
+      (v) => v ?? {},
       z.record(z.string(), z.array(UnresolvedPackageSchema)),
     ),
     /** Pre-computed analytics and summary statistics. */
