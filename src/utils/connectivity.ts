@@ -236,52 +236,99 @@ export function enrichClusters(
 // overlaps in this algorithm but the framing matters for any future modes
 // (e.g. "what if we adopted this external as scanned?").
 
+/**
+ * Direction-invariant fields shared by every MigrationUnit.
+ *
+ * Raw graph facts live here and never depend on migration direction.
+ * Display-time projection (e.g. `toDisplayUnit`) flips between
+ * `graphDependencies` and `graphDependents` when rendering.
+ *
+ * Important semantic distinction:
+ *   - `graphDependencies` / `graphDependents` are **cohort-expanded REPO lists**:
+ *     every scanned member of every neighboring condensation unit. A 5-member
+ *     SCC predecessor contributes 5 entries here.
+ *   - `externalInboundCount` / `externalOutboundCount` are **direct-neighbor
+ *     scalar counts**: distinct repos with an actual edge into/out of this
+ *     unit's members. The same 5-member SCC predecessor contributes whatever
+ *     fraction of its members have direct edges.
+ *   These are intentionally different sets — the arrays drive the prerequisites
+ *   listing (cohort awareness matters), the counts drive the tie-break sort
+ *   (direct importance matters).
+ */
+interface MigrationUnitBase {
+  /** 0-based wave; wave 0 migrates first. */
+  level: number;
+  /**
+   * Tie-break sort signal — equals `externalInboundCount` in BOTH
+   * directions. Kept for backward compat with the existing UI.
+   */
+  dependentCount: number;
+  /**
+   * @deprecated Use `toDisplayUnit(unit, direction).displayPrerequisites`.
+   * Backward-compat alias of `graphDependencies` (sinks-first projection).
+   * Removing in v3 Stage 2 once the UI switches to the projection helper.
+   */
+  prerequisites: string[];
+  /** Cohort-expanded scanned repos in outbound condensation neighbor units. */
+  graphDependencies: string[];
+  /** Cohort-expanded scanned repos in inbound condensation neighbor units. */
+  graphDependents: string[];
+  /** Distinct *direct* external scanned inbound count, phantom-filtered. */
+  externalInboundCount: number;
+  /** Distinct *direct* external scanned outbound count, phantom-filtered. */
+  externalOutboundCount: number;
+}
+
 /** A migration unit is either a single scanned repo or a strongly-connected cohort. */
 export type MigrationUnit =
-  | {
+  | (MigrationUnitBase & {
       kind: 'repo';
       repo: string;
       repos: [string];
-      /** 0-based wave; wave 0 migrates first. */
-      level: number;
-      dependentCount: number;
-      prerequisites: string[];
-    }
-  | {
+    })
+  | (MigrationUnitBase & {
       kind: 'scc';
       sccId: number;
       repos: string[];
-      /** 0-based wave; wave 0 migrates first. */
-      level: number;
-      dependentCount: number;
-      prerequisites: string[];
-    };
+    });
 
 export interface MigrationWave {
-  /** 0-based; wave 0 migrates first (foundations / sinks). */
+  /** 0-based; wave 0 migrates first (foundations / sinks for sinks-first). */
   level: number;
   units: MigrationUnit[];
 }
 
+/**
+ * Migration direction. Lives in the algorithm module because that's where
+ * the concept originates; display modules re-export.
+ */
+export type MigrationDirection = 'sinks-first' | 'sources-first';
+
 export interface MigrationOrderOptions {
   /**
    * `'sinks-first'` (default): foundations move first, consumers last.
-   * Only this direction is implemented today. The option is reserved
-   * because flipping requires coordinated UI/copy changes (prerequisite
-   * labels, tie-break copy); widen the union when the toggle is built.
+   * `'sources-first'`: consumers (top-level apps) move first.
    */
-  direction?: 'sinks-first';
+  direction?: MigrationDirection;
 }
 
-/** Distinct external scanned inbound neighbors of a unit (excludes intra-unit edges and phantoms). */
-function externalInbound(
+/**
+ * Distinct external scanned neighbors of a unit (excludes intra-unit edges
+ * and phantoms). Direction selects inbound vs outbound traversal.
+ */
+function externalNeighbors(
   members: ReadonlySet<string>,
   graph: MultiDirectedGraph,
+  direction: 'inbound' | 'outbound',
 ): string[] {
   const result = new Set<string>();
   for (const repo of members) {
     if (!graph.hasNode(repo)) continue;
-    for (const neighbor of graph.inboundNeighbors(repo)) {
+    const neighbors =
+      direction === 'inbound'
+        ? graph.inboundNeighbors(repo)
+        : graph.outboundNeighbors(repo);
+    for (const neighbor of neighbors) {
       if (members.has(neighbor)) continue;
       if (graph.getNodeAttribute(neighbor, 'isPhantom')) continue;
       result.add(neighbor);
@@ -333,134 +380,216 @@ export function buildCondensation(
 /**
  * Compute a recommended migration order from dependency direction and SCC cohorts.
  * Sinks-first by default: repos with no outgoing dependencies (foundations) move
- * in Wave 0; consumers move in later waves.
+ * in Wave 0; consumers move in later waves. Sources-first flips the seed and
+ * propagation direction so consumers (top-level apps) move first.
  *
  * Phantoms are filtered out entirely. SCCs are kept as indivisible units. Within
- * a wave, units are sorted by external dependent count desc, ties alphabetical.
+ * a wave, units are sorted by external inbound count desc, ties alphabetical.
  * Display-layer chunking (e.g. by org) lives in `migrationDisplay.ts`.
  */
 export function deriveMigrationOrder(
   stats: Pick<OutputData['stats'], 'clusters' | 'strong_clusters'>,
   graph: MultiDirectedGraph | null,
-  // Reserved for a future direction toggle; only sinks-first is supported today.
-  _options: MigrationOrderOptions = {},
+  options: MigrationOrderOptions = {},
 ): MigrationWave[] {
   if (!graph) return [];
+  const direction = options.direction ?? 'sinks-first';
 
-  // 1. Working node set: scanned (non-phantom) repos that exist in the graph.
+  const { unitOf, units } = buildUnitAssignment(stats, graph);
+  if (units.length === 0) return [];
+
+  const condensation = buildCondensation(graph, unitOf);
+  const levels = levelizeCondensation(units, condensation, direction);
+  const connectivity = computeUnitConnectivity(units, condensation, graph);
+
+  const migrationUnits: MigrationUnit[] = units.map((u) => {
+    const c = connectivity.get(u.id)!;
+    const lvl = levels.get(u.id) ?? 0;
+    const base: MigrationUnitBase = {
+      level: lvl,
+      dependentCount: c.externalInboundCount,
+      // Backward-compat: existing UI reads `prerequisites` directly.
+      prerequisites: c.graphDependencies,
+      graphDependencies: c.graphDependencies,
+      graphDependents: c.graphDependents,
+      externalInboundCount: c.externalInboundCount,
+      externalOutboundCount: c.externalOutboundCount,
+    };
+    if (u.sccId !== undefined) {
+      return {
+        kind: 'scc',
+        sccId: u.sccId,
+        repos: u.memberRepos,
+        ...base,
+      };
+    }
+    const [repo] = u.memberRepos;
+    return {
+      kind: 'repo',
+      repo,
+      repos: [repo],
+      ...base,
+    };
+  });
+
+  return assembleWaves(migrationUnits);
+}
+
+/** Internal metadata for a migration unit (pre-projection into MigrationUnit). */
+interface UnitMeta {
+  id: string;
+  members: Set<string>;
+  /** Sorted alphabetically. */
+  memberRepos: string[];
+  /** Set when this unit is a multi-repo SCC. */
+  sccId?: number;
+}
+
+interface Condensation {
+  units: string[];
+  outgoing: Map<string, Set<string>>;
+  incoming: Map<string, Set<string>>;
+}
+
+interface UnitConnectivity {
+  graphDependencies: string[];
+  graphDependents: string[];
+  externalInboundCount: number;
+  externalOutboundCount: number;
+}
+
+/**
+ * Phase 1+2: pick scanned repos, condense multi-scanned-member SCCs into
+ * shared units, and emit a stable repo→unit mapping.
+ */
+function buildUnitAssignment(
+  stats: Pick<OutputData['stats'], 'clusters' | 'strong_clusters'>,
+  graph: MultiDirectedGraph,
+): { unitOf: Map<string, string>; units: UnitMeta[] } {
   const scannedRepos = new Set<string>();
   graph.forEachNode((node, attrs) => {
     if (!attrs.isPhantom) scannedRepos.add(node);
   });
-  if (scannedRepos.size === 0) return [];
+  if (scannedRepos.size === 0) return { unitOf: new Map(), units: [] };
 
-  // 2. Repo -> unit id. SCCs (with 2+ scanned members) become shared units;
-  //    other scanned repos are singletons. Reuses enrichClusters for phantom
-  //    filtering so behavior stays consistent with other connectivity views.
   const enrichedStrong = enrichClusters(stats.strong_clusters ?? [], graph);
-  const repoToUnit = new Map<string, string>();
-  const unitMembers = new Map<string, Set<string>>();
-  const sccUnitToId = new Map<string, number>();
+  const unitOf = new Map<string, string>();
+  const units: UnitMeta[] = [];
 
   for (const cluster of enrichedStrong) {
     if (cluster.scannedRepos.length < 2) continue;
-    const unitId = `scc:${cluster.id}`;
-    sccUnitToId.set(unitId, cluster.id);
+    const id = `scc:${cluster.id}`;
     const members = new Set(cluster.scannedRepos);
-    unitMembers.set(unitId, members);
-    for (const repo of cluster.scannedRepos) {
-      repoToUnit.set(repo, unitId);
-    }
+    for (const repo of cluster.scannedRepos) unitOf.set(repo, id);
+    units.push({
+      id,
+      members,
+      memberRepos: [...members].sort((a, b) => a.localeCompare(b)),
+      sccId: cluster.id,
+    });
   }
 
   for (const repo of scannedRepos) {
-    if (repoToUnit.has(repo)) continue;
-    const unitId = `repo:${repo}`;
-    repoToUnit.set(repo, unitId);
-    unitMembers.set(unitId, new Set([repo]));
+    if (unitOf.has(repo)) continue;
+    const id = `repo:${repo}`;
+    unitOf.set(repo, id);
+    units.push({
+      id,
+      members: new Set([repo]),
+      memberRepos: [repo],
+    });
   }
 
-  // 3. Condensation DAG.
-  const { units, outgoing, incoming } = buildCondensation(graph, repoToUnit);
+  return { unitOf, units };
+}
 
-  // 4. Iterative Kahn-style levelization. Sinks (no outgoing edges) get level 0;
-  //    a unit's level is 1 + max(successor level). Iterative + head-index pointer
-  //    (not Array.shift, which is O(n)) to keep this O(V+E) and stack-safe on
-  //    long chains, especially in Safari/iOS.
+/**
+ * Phase 3+4: Iterative Kahn-style levelization on the condensation DAG.
+ * Iterative + head-index pointer (not Array.shift, which is O(n)) keeps this
+ * O(V+E) and stack-safe on long chains, especially in Safari/iOS.
+ *
+ * - sinks-first: seed with units having no outgoing condensation edges
+ *   (foundations); propagate via predecessors.
+ * - sources-first: seed with units having no incoming condensation edges
+ *   (top-level apps); propagate via successors.
+ */
+function levelizeCondensation(
+  units: readonly UnitMeta[],
+  condensation: Condensation,
+  direction: MigrationDirection,
+): Map<string, number> {
+  const { outgoing, incoming } = condensation;
+  const seedEdges = direction === 'sinks-first' ? outgoing : incoming;
+  const propagateEdges = direction === 'sinks-first' ? incoming : outgoing;
+
   const level = new Map<string, number>();
-  const remainingOut = new Map<string, number>();
+  const remaining = new Map<string, number>();
   const queue: string[] = [];
   let head = 0;
 
   for (const u of units) {
-    const out = outgoing.get(u)!.size;
-    remainingOut.set(u, out);
-    if (out === 0) {
-      level.set(u, 0);
-      queue.push(u);
+    const seedCount = seedEdges.get(u.id)?.size ?? 0;
+    remaining.set(u.id, seedCount);
+    if (seedCount === 0) {
+      level.set(u.id, 0);
+      queue.push(u.id);
     }
   }
 
   while (head < queue.length) {
     const u = queue[head++];
     const myLevel = level.get(u)!;
-    for (const pred of incoming.get(u) ?? []) {
-      const succLevel = level.get(pred);
+    for (const next of propagateEdges.get(u) ?? []) {
       const candidate = myLevel + 1;
-      if (succLevel === undefined || candidate > succLevel) {
-        level.set(pred, candidate);
-      }
-      const remaining = (remainingOut.get(pred) ?? 0) - 1;
-      remainingOut.set(pred, remaining);
-      if (remaining === 0) queue.push(pred);
+      const cur = level.get(next);
+      if (cur === undefined || candidate > cur) level.set(next, candidate);
+      const r = (remaining.get(next) ?? 0) - 1;
+      remaining.set(next, r);
+      if (r === 0) queue.push(next);
     }
   }
 
-  // 5. Build MigrationUnit per unit id, attaching the wave level directly so
-  //    callers don't need a parallel-array lookup to recover it.
-  const migrationUnits: MigrationUnit[] = [];
+  return level;
+}
 
-  for (const unitId of units) {
-    const members = unitMembers.get(unitId)!;
-    const memberRepos = [...members].sort((a, b) => a.localeCompare(b));
-    const dependents = externalInbound(members, graph);
+/**
+ * Phase 5: per-unit raw connectivity. Direction-invariant — display layer
+ * picks `graphDependencies` vs `graphDependents` based on direction.
+ */
+function computeUnitConnectivity(
+  units: readonly UnitMeta[],
+  condensation: Condensation,
+  graph: MultiDirectedGraph,
+): Map<string, UnitConnectivity> {
+  const memberLookup = new Map<string, Set<string>>();
+  for (const u of units) memberLookup.set(u.id, u.members);
 
-    // Prerequisites = scanned repos in immediate condensation-successor units.
-    const prereqs = new Set<string>();
-    for (const succUnit of outgoing.get(unitId) ?? []) {
-      for (const repo of unitMembers.get(succUnit) ?? []) {
-        prereqs.add(repo);
-      }
+  const result = new Map<string, UnitConnectivity>();
+  for (const u of units) {
+    const dependencyRepos = new Set<string>();
+    for (const succ of condensation.outgoing.get(u.id) ?? []) {
+      for (const r of memberLookup.get(succ) ?? []) dependencyRepos.add(r);
     }
-    const prerequisites = [...prereqs].sort((a, b) => a.localeCompare(b));
-
-    const lvl = level.get(unitId) ?? 0;
-
-    const sccId = sccUnitToId.get(unitId);
-    if (sccId !== undefined) {
-      migrationUnits.push({
-        kind: 'scc',
-        sccId,
-        repos: memberRepos,
-        level: lvl,
-        dependentCount: dependents.length,
-        prerequisites,
-      });
-    } else {
-      const [repo] = memberRepos;
-      migrationUnits.push({
-        kind: 'repo',
-        repo,
-        repos: [repo],
-        level: lvl,
-        dependentCount: dependents.length,
-        prerequisites,
-      });
+    const dependentRepos = new Set<string>();
+    for (const pred of condensation.incoming.get(u.id) ?? []) {
+      for (const r of memberLookup.get(pred) ?? []) dependentRepos.add(r);
     }
+    result.set(u.id, {
+      graphDependencies: [...dependencyRepos].sort((a, b) =>
+        a.localeCompare(b),
+      ),
+      graphDependents: [...dependentRepos].sort((a, b) => a.localeCompare(b)),
+      externalInboundCount: externalNeighbors(u.members, graph, 'inbound')
+        .length,
+      externalOutboundCount: externalNeighbors(u.members, graph, 'outbound')
+        .length,
+    });
   }
+  return result;
+}
 
-  // 6. Group into waves by level. Within-wave grouping is now a display concern
-  //    (see splitWavesForDisplay in migrationDisplay.ts).
+/** Phase 6: bucket units by level into waves; within-wave order via `sortUnits`. */
+function assembleWaves(migrationUnits: MigrationUnit[]): MigrationWave[] {
   const wavesByLevel = new Map<number, MigrationUnit[]>();
   for (const unit of migrationUnits) {
     let bucket = wavesByLevel.get(unit.level);
@@ -472,12 +601,10 @@ export function deriveMigrationOrder(
   }
 
   const sortedLevels = [...wavesByLevel.keys()].sort((a, b) => a - b);
-  const waves: MigrationWave[] = sortedLevels.map((lvl) => ({
+  return sortedLevels.map((lvl) => ({
     level: lvl,
     units: sortUnits(wavesByLevel.get(lvl)!),
   }));
-
-  return waves;
 }
 
 /** Sort units by dependent count desc, ties alphabetical on first repo. */

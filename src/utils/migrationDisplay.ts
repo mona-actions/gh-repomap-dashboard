@@ -8,9 +8,13 @@
 import {
   sortUnits,
   totalDependents,
+  type MigrationDirection,
   type MigrationUnit,
   type MigrationWave,
 } from './connectivity';
+
+/** Migration direction — re-exported from connectivity for display callers. */
+export type { MigrationDirection } from './connectivity';
 
 export const WAVE_REPO_CAP = 100;
 
@@ -151,4 +155,90 @@ export function splitWavesForDisplay(
   }
 
   return result;
+}
+
+/** A `MigrationUnit` projected for display in a given direction. */
+export type DisplayUnit = MigrationUnit & {
+  /**
+   * Direction-aware view of `prerequisites`:
+   * sinks-first → graphDependencies; sources-first → graphDependents.
+   */
+  displayPrerequisites: string[];
+};
+
+/**
+ * Project a unit for display. Pure: returns a shallow copy without mutating
+ * the input. The data layer carries direction-invariant fields; this seam is
+ * where the display direction picks the right one.
+ */
+export function toDisplayUnit(
+  unit: MigrationUnit,
+  direction: MigrationDirection,
+): DisplayUnit {
+  const displayPrerequisites =
+    direction === 'sinks-first'
+      ? unit.graphDependencies
+      : unit.graphDependents;
+  return { ...unit, displayPrerequisites };
+}
+
+export interface OversizedSCCSummary {
+  /** DisplayWave id derived as `${level}.${subIndex}` for "Jump to wave" linkage. */
+  waveId: string;
+  /** Human-readable label, e.g. "Wave 3" (single sub-wave) or "Sub-wave 3.2". */
+  waveLabel: string;
+  sccSize: number;
+  /** SCC member repos. */
+  repos: string[];
+}
+
+export interface PlanSummary {
+  /** Count of DisplayWaves (sub-waves count individually). */
+  totalWaves: number;
+  /** Sum of repos across all waves. */
+  totalRepos: number;
+  /** Count of multi-repo SCC units (size > 1) across all waves. */
+  totalSCCs: number;
+  /** Every oversized SCC (cohort that exceeded the cap). Empty when none. */
+  oversizedSCCs: OversizedSCCSummary[];
+}
+
+/**
+ * Pure summary stats over a `splitWavesForDisplay` result. Used by the banner
+ * and the rollup-expand UI; co-located with the display module so the seam
+ * between algorithm and display stays tidy.
+ */
+export function summarizePlan(displayWaves: DisplayWave[]): PlanSummary {
+  let totalRepos = 0;
+  let totalSCCs = 0;
+  const oversizedSCCs: OversizedSCCSummary[] = [];
+
+  for (const wave of displayWaves) {
+    totalRepos += wave.totalRepos;
+    for (const unit of wave.units) {
+      if (unit.kind === 'scc' && unit.repos.length > 1) totalSCCs += 1;
+    }
+    if (wave.oversizedSCC) {
+      // Oversized chunk per construction holds exactly one SCC unit.
+      const scc = wave.units.find((u) => u.kind === 'scc');
+      if (scc) {
+        oversizedSCCs.push({
+          waveId: `${wave.level}.${wave.subIndex}`,
+          waveLabel:
+            wave.totalSubWavesAtLevel > 1
+              ? `Sub-wave ${wave.level + 1}.${wave.subIndex}`
+              : `Wave ${wave.level + 1}`,
+          sccSize: scc.repos.length,
+          repos: scc.repos,
+        });
+      }
+    }
+  }
+
+  return {
+    totalWaves: displayWaves.length,
+    totalRepos,
+    totalSCCs,
+    oversizedSCCs,
+  };
 }

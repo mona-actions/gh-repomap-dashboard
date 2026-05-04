@@ -3,6 +3,8 @@ import {
   splitWavesForDisplay,
   extractOrg,
   assignUnitOrg,
+  summarizePlan,
+  toDisplayUnit,
   WAVE_REPO_CAP,
   type DisplayWave,
 } from '../migrationDisplay';
@@ -22,6 +24,10 @@ function repoUnit(
     level,
     dependentCount,
     prerequisites: [],
+    graphDependencies: [],
+    graphDependents: [],
+    externalInboundCount: dependentCount,
+    externalOutboundCount: 0,
   };
 }
 
@@ -38,6 +44,10 @@ function sccUnit(
     level,
     dependentCount,
     prerequisites: [],
+    graphDependencies: [],
+    graphDependents: [],
+    externalInboundCount: dependentCount,
+    externalOutboundCount: 0,
   };
 }
 
@@ -270,5 +280,100 @@ describe('splitWavesForDisplay', () => {
   it('result type is DisplayWave[]', () => {
     const out: DisplayWave[] = splitWavesForDisplay([]);
     expect(out).toEqual([]);
+  });
+});
+
+describe('toDisplayUnit', () => {
+  it('sinks-first returns graphDependencies as displayPrerequisites', () => {
+    const unit: MigrationUnit = {
+      ...repoUnit('acme/x', 0),
+      graphDependencies: ['acme/dep1', 'acme/dep2'],
+      graphDependents: ['acme/up1'],
+    };
+    const projected = toDisplayUnit(unit, 'sinks-first');
+    expect(projected.displayPrerequisites).toEqual(['acme/dep1', 'acme/dep2']);
+  });
+
+  it('sources-first returns graphDependents as displayPrerequisites', () => {
+    const unit: MigrationUnit = {
+      ...repoUnit('acme/x', 0),
+      graphDependencies: ['acme/dep1'],
+      graphDependents: ['acme/up1', 'acme/up2'],
+    };
+    const projected = toDisplayUnit(unit, 'sources-first');
+    expect(projected.displayPrerequisites).toEqual(['acme/up1', 'acme/up2']);
+  });
+
+  it('does not mutate the original unit', () => {
+    const unit: MigrationUnit = {
+      ...repoUnit('acme/x', 0),
+      graphDependencies: ['acme/dep'],
+    };
+    const before = JSON.stringify(unit);
+    toDisplayUnit(unit, 'sources-first');
+    expect(JSON.stringify(unit)).toBe(before);
+    expect('displayPrerequisites' in unit).toBe(false);
+  });
+
+  it('handles units with empty dep arrays', () => {
+    const unit = repoUnit('acme/leaf', 0);
+    expect(toDisplayUnit(unit, 'sinks-first').displayPrerequisites).toEqual([]);
+    expect(toDisplayUnit(unit, 'sources-first').displayPrerequisites).toEqual(
+      [],
+    );
+  });
+});
+
+describe('summarizePlan', () => {
+  it('empty input → all zeroes and empty oversized list', () => {
+    const summary = summarizePlan([]);
+    expect(summary).toEqual({
+      totalWaves: 0,
+      totalRepos: 0,
+      totalSCCs: 0,
+      oversizedSCCs: [],
+    });
+    expect(Array.isArray(summary.oversizedSCCs)).toBe(true);
+  });
+
+  it('counts waves, repos, and multi-repo SCCs across multiple waves', () => {
+    const w1 = wave(0, [
+      repoUnit('acme/a', 0),
+      sccUnit(['acme/b', 'acme/c'], 0, 0, 1),
+    ]);
+    const w2 = wave(1, [
+      repoUnit('acme/d', 1),
+      sccUnit(['acme/e', 'acme/f', 'acme/g'], 1, 0, 2),
+    ]);
+    const display = splitWavesForDisplay([w1, w2]);
+    const summary = summarizePlan(display);
+    expect(summary.totalWaves).toBe(display.length);
+    expect(summary.totalRepos).toBe(7);
+    expect(summary.totalSCCs).toBe(2);
+    expect(summary.oversizedSCCs).toEqual([]);
+  });
+
+  it('populates oversizedSCCs with wave linkage for cohorts above cap', () => {
+    const repos = Array.from({ length: 150 }, (_, i) => `acme/r${i}`);
+    const scc = sccUnit(repos, 0, 5, 7);
+    const display = splitWavesForDisplay([wave(0, [scc])]);
+    const summary = summarizePlan(display);
+    expect(summary.oversizedSCCs).toHaveLength(1);
+    const [first] = summary.oversizedSCCs;
+    expect(first.sccSize).toBe(150);
+    expect(first.repos).toEqual(scc.repos);
+    expect(first.waveId).toBe('0.1');
+    // Single sub-wave at this level → "Wave N" label, not "Sub-wave".
+    expect(first.waveLabel).toBe('Wave 1');
+  });
+
+  it('uses Sub-wave labels when the level was split', () => {
+    const repos = Array.from({ length: 150 }, (_, i) => `acme/r${i}`);
+    const oversized = sccUnit(repos, 0, 0, 9);
+    const filler = manyRepos('beta', 50, 0);
+    const display = splitWavesForDisplay([wave(0, [oversized, ...filler])]);
+    const summary = summarizePlan(display);
+    expect(summary.oversizedSCCs).toHaveLength(1);
+    expect(summary.oversizedSCCs[0].waveLabel).toMatch(/^Sub-wave 1\.\d+$/);
   });
 });

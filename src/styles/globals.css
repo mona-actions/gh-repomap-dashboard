@@ -1999,6 +1999,14 @@ body {
   color: var(--fgColor-muted, #636c76);
 }
 
+.migration-plan__wave-role {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fgColor-muted, #636c76);
+}
+
 .migration-cohorts__group {
   margin-top: 10px;
 }
@@ -2116,6 +2124,131 @@ body {
   margin-top: 4px;
   padding-top: 4px;
   border-top: none;
+}
+
+.migration-plan__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 12px;
+}
+
+.migration-plan__direction-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 4px 8px;
+  border: 1px solid var(--borderColor-default, #d0d7de);
+  border-radius: 6px;
+  background: var(--bgColor-default, #fff);
+  font-size: 13px;
+}
+
+.migration-plan__direction-toggle label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.migration-plan__cap-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--fgColor-muted, #636c76);
+}
+
+.migration-plan__cap-input {
+  width: 80px;
+  padding: 4px 6px;
+  border: 1px solid var(--borderColor-default, #d0d7de);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.migration-plan__download-button {
+  padding: 5px 12px;
+  border: 1px solid var(--borderColor-default, #d0d7de);
+  border-radius: 6px;
+  background: var(--bgColor-accent-emphasis, #0969da);
+  color: var(--fgColor-onEmphasis, #fff);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.migration-plan__download-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.migration-plan__banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.migration-plan__stat {
+  padding: 6px 10px;
+  border: 1px solid var(--borderColor-muted, #d8dee4);
+  border-radius: 6px;
+  background: var(--bgColor-muted, #f6f8fa);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fgColor-default, #1f2328);
+}
+
+button.migration-plan__stat {
+  cursor: pointer;
+  font: inherit;
+}
+
+.migration-plan__stat--warn {
+  border-color: var(--borderColor-attention-emphasis, #d4a72c);
+  background: var(--bgColor-attention-muted, #fff8c5);
+  color: var(--fgColor-attention, #7d4e00);
+}
+
+.migration-plan__stat--muted {
+  color: var(--fgColor-muted, #636c76);
+}
+
+.migration-plan__rollup {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--borderColor-attention-emphasis, #d4a72c);
+  border-radius: 6px;
+  background: var(--bgColor-attention-muted, #fff8c5);
+  color: var(--fgColor-attention, #7d4e00);
+  font-size: 13px;
+}
+
+.migration-plan__rollup summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.migration-plan__rollup ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.migration-plan__rollup li {
+  margin: 4px 0;
+}
+
+.migration-plan__rollup button {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border: 1px solid var(--borderColor-default, #d0d7de);
+  border-radius: 4px;
+  background: var(--bgColor-default, #fff);
+  font-size: 12px;
+  cursor: pointer;
 }
 
 /* ── Critical Repos ────────────────────────────────────────────── */

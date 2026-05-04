@@ -504,3 +504,254 @@ describe('deriveMigrationOrder', () => {
     }
   });
 });
+
+describe('deriveMigrationOrder — sources-first', () => {
+  it('chain a -> b -> c puts source in wave 0', () => {
+    const graph = buildGraph({
+      scanned: ['org/a', 'org/b', 'org/c'],
+      edges: [
+        ['org/a', 'org/b'],
+        ['org/b', 'org/c'],
+      ],
+    });
+    const waves = deriveMigrationOrder(
+      { clusters: [], strong_clusters: [] },
+      graph,
+      { direction: 'sources-first' },
+    );
+    expect(waves.map((w) => w.level)).toEqual([0, 1, 2]);
+    expect(waves[0].units[0].repos).toEqual(['org/a']);
+    expect(waves[1].units[0].repos).toEqual(['org/b']);
+    expect(waves[2].units[0].repos).toEqual(['org/c']);
+  });
+
+  it('diamond a -> {b,c} -> d puts a in wave 0, d in wave 2', () => {
+    const graph = buildGraph({
+      scanned: ['org/a', 'org/b', 'org/c', 'org/d'],
+      edges: [
+        ['org/a', 'org/b'],
+        ['org/a', 'org/c'],
+        ['org/b', 'org/d'],
+        ['org/c', 'org/d'],
+      ],
+    });
+    const waves = deriveMigrationOrder(
+      { clusters: [], strong_clusters: [] },
+      graph,
+      { direction: 'sources-first' },
+    );
+    expect(waves).toHaveLength(3);
+    expect(waves[0].units.map((u) => u.repos[0])).toEqual(['org/a']);
+    expect(waves[1].units.map((u) => u.repos[0]).sort()).toEqual([
+      'org/b',
+      'org/c',
+    ]);
+    expect(waves[2].units.map((u) => u.repos[0])).toEqual(['org/d']);
+  });
+
+  it('keeps a 3-node SCC indivisible in sources-first', () => {
+    const graph = buildGraph({
+      scanned: ['org/a', 'org/b', 'org/c', 'org/leaf'],
+      edges: [
+        ['org/a', 'org/b'],
+        ['org/b', 'org/c'],
+        ['org/c', 'org/a'],
+        ['org/c', 'org/leaf'],
+      ],
+    });
+    const waves = deriveMigrationOrder(
+      {
+        clusters: [],
+        strong_clusters: [
+          { id: 1, repos: ['org/a', 'org/b', 'org/c'], size: 3 },
+        ],
+      },
+      graph,
+      { direction: 'sources-first' },
+    );
+    expect(waves).toHaveLength(2);
+    const sccUnit = waves[0].units[0];
+    expect(sccUnit.kind).toBe('scc');
+    expect(sccUnit.repos).toEqual(['org/a', 'org/b', 'org/c']);
+    expect(waves[1].units[0].repos).toEqual(['org/leaf']);
+  });
+
+  it('phantom-only inbound: scanned source still seeds wave 0', () => {
+    const graph = buildGraph({
+      scanned: ['org/a', 'org/b'],
+      phantom: ['ext/x'],
+      edges: [
+        ['ext/x', 'org/a'],
+        ['org/a', 'org/b'],
+      ],
+    });
+    const waves = deriveMigrationOrder(
+      { clusters: [], strong_clusters: [] },
+      graph,
+      { direction: 'sources-first' },
+    );
+    expect(waves).toHaveLength(2);
+    expect(waves[0].units[0].repos).toEqual(['org/a']);
+    expect(waves[1].units[0].repos).toEqual(['org/b']);
+  });
+
+  it('sinks-first phantom-only outbound: phantoms do not affect levelization', () => {
+    const graph = buildGraph({
+      scanned: ['org/a', 'org/b'],
+      phantom: ['ext/x'],
+      edges: [
+        ['org/a', 'ext/x'],
+        ['org/b', 'org/a'],
+      ],
+    });
+    const waves = deriveMigrationOrder(
+      { clusters: [], strong_clusters: [] },
+      graph,
+      { direction: 'sinks-first' },
+    );
+    expect(waves).toHaveLength(2);
+    expect(waves[0].units[0].repos).toEqual(['org/a']);
+    expect(waves[1].units[0].repos).toEqual(['org/b']);
+  });
+
+  it('round-trip determinism: sinks→sources→sinks deep-equal first', () => {
+    const graph = buildGraph({
+      scanned: ['org/a', 'org/b', 'org/c', 'org/d'],
+      edges: [
+        ['org/a', 'org/b'],
+        ['org/a', 'org/c'],
+        ['org/b', 'org/d'],
+        ['org/c', 'org/d'],
+      ],
+    });
+    const opts = { clusters: [], strong_clusters: [] };
+    const first = deriveMigrationOrder(opts, graph, {
+      direction: 'sinks-first',
+    });
+    deriveMigrationOrder(opts, graph, { direction: 'sources-first' });
+    const third = deriveMigrationOrder(opts, graph, {
+      direction: 'sinks-first',
+    });
+    expect(third).toEqual(first);
+  });
+
+  it('disconnected components: both DAG roots seed wave 0', () => {
+    const graph = buildGraph({
+      scanned: ['c1/a', 'c1/b', 'c2/a', 'c2/b'],
+      edges: [
+        ['c1/a', 'c1/b'],
+        ['c2/a', 'c2/b'],
+      ],
+    });
+    const sources = deriveMigrationOrder(
+      { clusters: [], strong_clusters: [] },
+      graph,
+      { direction: 'sources-first' },
+    );
+    expect(sources).toHaveLength(2);
+    expect(sources[0].units.map((u) => u.repos[0]).sort()).toEqual([
+      'c1/a',
+      'c2/a',
+    ]);
+    expect(sources[1].units.map((u) => u.repos[0]).sort()).toEqual([
+      'c1/b',
+      'c2/b',
+    ]);
+
+    const sinks = deriveMigrationOrder(
+      { clusters: [], strong_clusters: [] },
+      graph,
+      { direction: 'sinks-first' },
+    );
+    expect(sinks).toHaveLength(2);
+    expect(sinks[0].units.map((u) => u.repos[0]).sort()).toEqual([
+      'c1/b',
+      'c2/b',
+    ]);
+  });
+
+  it('self-loop: single repo becomes singleton, no infinite loop', () => {
+    const graph = buildGraph({
+      scanned: ['org/a'],
+      edges: [['org/a', 'org/a']],
+    });
+    const waves = deriveMigrationOrder(
+      { clusters: [], strong_clusters: [] },
+      graph,
+      { direction: 'sources-first' },
+    );
+    expect(waves).toHaveLength(1);
+    expect(waves[0].units).toHaveLength(1);
+    expect(waves[0].units[0].kind).toBe('repo');
+    expect(waves[0].units[0].repos).toEqual(['org/a']);
+  });
+});
+
+describe('MigrationUnit raw fields', () => {
+  it('graphDependencies and graphDependents are populated symmetrically', () => {
+    const graph = buildGraph({
+      scanned: ['org/a', 'org/b', 'org/c'],
+      edges: [
+        ['org/a', 'org/b'],
+        ['org/b', 'org/c'],
+      ],
+    });
+    const waves = deriveMigrationOrder(
+      { clusters: [], strong_clusters: [] },
+      graph,
+    );
+    const all = waves.flatMap((w) => w.units);
+    const a = all.find((u) => u.repos[0] === 'org/a')!;
+    const b = all.find((u) => u.repos[0] === 'org/b')!;
+    const c = all.find((u) => u.repos[0] === 'org/c')!;
+    expect(a.graphDependencies).toEqual(['org/b']);
+    expect(a.graphDependents).toEqual([]);
+    expect(b.graphDependencies).toEqual(['org/c']);
+    expect(b.graphDependents).toEqual(['org/a']);
+    expect(c.graphDependencies).toEqual([]);
+    expect(c.graphDependents).toEqual(['org/b']);
+  });
+
+  it('externalInboundCount and externalOutboundCount filter phantoms', () => {
+    const graph = buildGraph({
+      scanned: ['org/a', 'org/b', 'org/c'],
+      phantom: ['ext/in', 'ext/out'],
+      edges: [
+        ['ext/in', 'org/a'],
+        ['org/b', 'org/a'],
+        ['org/a', 'ext/out'],
+        ['org/a', 'org/c'],
+      ],
+    });
+    const waves = deriveMigrationOrder(
+      { clusters: [], strong_clusters: [] },
+      graph,
+    );
+    const a = waves.flatMap((w) => w.units).find((u) => u.repos[0] === 'org/a')!;
+    // Phantom ext/in excluded from inbound; org/b counted.
+    expect(a.externalInboundCount).toBe(1);
+    // Phantom ext/out excluded from outbound; org/c counted.
+    expect(a.externalOutboundCount).toBe(1);
+  });
+});
+
+describe('deriveMigrationOrder — performance', () => {
+  it('completes a 6,000-node linear chain in under 2000ms', () => {
+    const N = 6000;
+    const scanned = Array.from({ length: N }, (_, i) => `org/r${i}`);
+    const edges: Array<[string, string]> = [];
+    for (let i = 0; i < N - 1; i++) {
+      edges.push([scanned[i], scanned[i + 1]]);
+    }
+    const graph = buildGraph({ scanned, edges });
+    const start = Date.now();
+    const waves = deriveMigrationOrder(
+      { clusters: [], strong_clusters: [] },
+      graph,
+    );
+    const elapsed = Date.now() - start;
+    expect(waves).toHaveLength(N);
+    expect(elapsed).toBeLessThan(2000);
+  });
+});
+

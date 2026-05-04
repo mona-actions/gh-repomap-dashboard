@@ -1,22 +1,33 @@
 /**
- * MigrationWaveCard — One display sub-wave (one org chunk) of the plan.
- *
- * Collapsed by default via <details>; header summarizes wave label, org,
- * repo count, and an oversized-SCC badge when the cohort can't be split.
+ * MigrationWaveCard — One display sub-wave of the plan. Controlled `<details>`:
+ * parent owns open/close state so direction flips can reset cleanly and the
+ * rollup "Jump to wave" can force-open a card.
  */
 import { useState } from 'react';
 import type { MigrationUnit } from '@/utils/connectivity';
-import type { DisplayWave } from '@/utils/migrationDisplay';
+import {
+  toDisplayUnit,
+  type DisplayWave,
+  type MigrationDirection,
+} from '@/utils/migrationDisplay';
 
 const PREREQ_INITIAL = 5;
 
 interface MigrationWaveCardProps {
+  waveId: string;
   displayWave: DisplayWave;
+  direction: MigrationDirection;
+  open: boolean;
+  onToggle: (waveId: string, open: boolean) => void;
   onRepoClick: (repo: string) => void;
 }
 
 export function MigrationWaveCard({
+  waveId,
   displayWave,
+  direction,
+  open,
+  onToggle,
   onRepoClick,
 }: MigrationWaveCardProps) {
   const {
@@ -34,19 +45,33 @@ export function MigrationWaveCard({
     ? `Wave ${level + 1}.${subIndex}`
     : `Wave ${level + 1}`;
 
+  // Wave 1 sub-label flips with direction; later waves render no sub-label.
+  const isFirstWave = level === 0 && subIndex === 1;
+  const firstWaveLabel =
+    direction === 'sinks-first' ? 'Foundations' : 'Top-level consumers';
+
   return (
     <article className="migration-cohorts__card migration-plan__wave">
-      <details className="migration-plan__wave-details">
+      <details
+        id={`wave-${waveId}`}
+        className="migration-plan__wave-details"
+        open={open}
+        onToggle={(e) =>
+          onToggle(waveId, (e.currentTarget as HTMLDetailsElement).open)
+        }
+      >
         <summary className="migration-cohorts__card-header migration-plan__wave-summary">
           <h4 className="migration-cohorts__card-title">
             {waveLabel} · {org} · {totalRepos}{' '}
             {totalRepos === 1 ? 'repo' : 'repos'}
           </h4>
+          {isFirstWave && (
+            <span className="migration-plan__wave-role">
+              {firstWaveLabel}
+            </span>
+          )}
           {oversizedSCC && (
-            <span
-              className="migration-plan__oversized-badge"
-              role="status"
-            >
+            <span className="migration-plan__oversized-badge" role="status">
               ⚠ Indivisible cohort — {totalRepos} repos must migrate atomically
             </span>
           )}
@@ -63,7 +88,11 @@ export function MigrationWaveCard({
               key={unit.kind === 'scc' ? `scc:${unit.sccId}` : `repo:${unit.repo}`}
               className="migration-plan__unit"
             >
-              <UnitChip unit={unit} onRepoClick={onRepoClick} />
+              <UnitChip
+                unit={unit}
+                direction={direction}
+                onRepoClick={onRepoClick}
+              />
             </li>
           ))}
         </ul>
@@ -74,10 +103,13 @@ export function MigrationWaveCard({
 
 interface UnitChipProps {
   unit: MigrationUnit;
+  direction: MigrationDirection;
   onRepoClick: (repo: string) => void;
 }
 
-function UnitChip({ unit, onRepoClick }: UnitChipProps) {
+function UnitChip({ unit, direction, onRepoClick }: UnitChipProps) {
+  const displayPrerequisites = toDisplayUnit(unit, direction).displayPrerequisites;
+
   if (unit.kind === 'repo') {
     return (
       <span className="migration-plan__chip">
@@ -94,7 +126,7 @@ function UnitChip({ unit, onRepoClick }: UnitChipProps) {
           {unit.dependentCount === 1 ? 'dependent' : 'dependents'}
         </span>
         <PrerequisiteDisclosure
-          prerequisites={unit.prerequisites}
+          prerequisites={displayPrerequisites}
           onRepoClick={onRepoClick}
         />
       </span>
@@ -126,7 +158,7 @@ function UnitChip({ unit, onRepoClick }: UnitChipProps) {
         </ul>
       </details>
       <PrerequisiteDisclosure
-        prerequisites={unit.prerequisites}
+        prerequisites={displayPrerequisites}
         onRepoClick={onRepoClick}
       />
     </span>
@@ -152,8 +184,7 @@ function PrerequisiteDisclosure({
   return (
     <details className="migration-cohorts__details migration-plan__prereqs">
       <summary>
-        Prerequisites ({prerequisites.length}) — repos in earlier waves this
-        unit depends on
+        Prerequisites ({prerequisites.length}) — must migrate before this
       </summary>
       <ul className="migration-cohorts__repo-list">
         {visible.map((repo) => (
