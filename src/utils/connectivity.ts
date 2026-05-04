@@ -127,41 +127,55 @@ export function deriveMigrationCohorts(
 
   return coreClusters.map((cluster) => {
     const coreSet = new Set(cluster.repos);
-    const recommendedDependencies = new Set<string>();
-    const recommendedDependents = new Set<string>();
 
-    if (graph) {
-      for (const repo of cluster.repos) {
-        if (!graph.hasNode(repo)) {
-          continue;
-        }
-
-        for (const dep of graph.outboundNeighbors(repo)) {
-          if (!coreSet.has(dep)) {
-            recommendedDependencies.add(dep);
-          }
-        }
-
-        for (const dependent of graph.inboundNeighbors(repo)) {
-          if (!coreSet.has(dependent)) {
-            recommendedDependents.add(dependent);
-          }
-        }
-      }
-    }
+    const recommendedDependencies = graph ? externalOutbound(coreSet, graph) : [];
+    const recommendedDependents = graph ? externalInbound(coreSet, graph) : [];
 
     return {
       id: cluster.id,
       coreRepos: [...cluster.repos].sort((a, b) => a.localeCompare(b)),
       coreSize: cluster.size,
-      recommendedDependencies: [...recommendedDependencies].sort((a, b) =>
-        a.localeCompare(b),
-      ),
-      recommendedDependents: [...recommendedDependents].sort((a, b) =>
-        a.localeCompare(b),
-      ),
+      recommendedDependencies,
+      recommendedDependents,
     };
   });
+}
+
+/** Distinct external scanned inbound neighbors of a unit (excludes intra-unit edges and phantoms). */
+function externalInbound(
+  members: ReadonlySet<string>,
+  graph: MultiDirectedGraph,
+): string[] {
+  const result = new Set<string>();
+  for (const repo of members) {
+    if (!graph.hasNode(repo)) continue;
+    for (const neighbor of graph.inboundNeighbors(repo)) {
+      if (members.has(neighbor)) continue;
+      if (graph.getNodeAttribute(neighbor, 'isPhantom')) continue;
+      result.add(neighbor);
+    }
+  }
+  return [...result].sort((a, b) => a.localeCompare(b));
+}
+
+// TODO(post-migration-grouping-merge): collapse externalInbound/externalOutbound
+// into a single helper parameterized by direction. Kept duplicated here so the
+// canonical externalInbound on feature/migration-grouping merges cleanly.
+/** Distinct external scanned outbound neighbors of a unit (excludes intra-unit edges and phantoms). */
+function externalOutbound(
+  members: ReadonlySet<string>,
+  graph: MultiDirectedGraph,
+): string[] {
+  const result = new Set<string>();
+  for (const repo of members) {
+    if (!graph.hasNode(repo)) continue;
+    for (const neighbor of graph.outboundNeighbors(repo)) {
+      if (members.has(neighbor)) continue;
+      if (graph.getNodeAttribute(neighbor, 'isPhantom')) continue;
+      result.add(neighbor);
+    }
+  }
+  return [...result].sort((a, b) => a.localeCompare(b));
 }
 
 export interface EnrichedCluster {

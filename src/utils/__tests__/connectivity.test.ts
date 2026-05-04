@@ -118,6 +118,53 @@ describe('deriveMigrationCohorts', () => {
       },
     ]);
   });
+
+  it('filters phantoms out of recommended dependencies and dependents', () => {
+    const graph = new MultiDirectedGraph();
+    graph.addNode('org/a', { isPhantom: false, org: 'org', archived: false });
+    graph.addNode('org/b', { isPhantom: false, org: 'org', archived: false });
+    graph.addNode('org/consumer', {
+      isPhantom: false,
+      org: 'org',
+      archived: false,
+    });
+    graph.addNode('org/dep', {
+      isPhantom: false,
+      org: 'org',
+      archived: false,
+    });
+    graph.addNode('npm:react', {
+      isPhantom: true,
+      org: 'npm',
+      archived: false,
+    });
+    graph.addNode('npm:lodash', {
+      isPhantom: true,
+      org: 'npm',
+      archived: false,
+    });
+
+    // 2-node SCC
+    graph.addDirectedEdge('org/a', 'org/b');
+    graph.addDirectedEdge('org/b', 'org/a');
+
+    // phantom inbound -> should be filtered from dependents
+    graph.addDirectedEdge('npm:react', 'org/a');
+    // phantom outbound -> should be filtered from dependencies
+    graph.addDirectedEdge('org/b', 'npm:lodash');
+    // real external edges -> should be kept
+    graph.addDirectedEdge('org/consumer', 'org/a');
+    graph.addDirectedEdge('org/b', 'org/dep');
+
+    const result = deriveMigrationCohorts(
+      [{ id: 1, repos: ['org/a', 'org/b'], size: 2 }],
+      graph,
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0].recommendedDependents).toEqual(['org/consumer']);
+    expect(result[0].recommendedDependencies).toEqual(['org/dep']);
+  });
 });
 
 describe('enrichCluster', () => {
