@@ -66,9 +66,7 @@ export function MigrationWaveCard({
             {totalRepos === 1 ? 'repo' : 'repos'}
           </h4>
           {isFirstWave && (
-            <span className="migration-plan__wave-role">
-              {firstWaveLabel}
-            </span>
+            <span className="migration-plan__wave-role">{firstWaveLabel}</span>
           )}
           {oversizedSCC && (
             <span className="migration-plan__oversized-badge" role="status">
@@ -85,7 +83,9 @@ export function MigrationWaveCard({
         <ul className="migration-cohorts__repo-list migration-plan__unit-list">
           {units.map((unit) => (
             <li
-              key={unit.kind === 'scc' ? `scc:${unit.sccId}` : `repo:${unit.repo}`}
+              key={
+                unit.kind === 'scc' ? `scc:${unit.sccId}` : `repo:${unit.repo}`
+              }
               className="migration-plan__unit"
             >
               <UnitChip
@@ -108,7 +108,10 @@ interface UnitChipProps {
 }
 
 function UnitChip({ unit, direction, onRepoClick }: UnitChipProps) {
-  const displayPrerequisites = toDisplayUnit(unit, direction).displayPrerequisites;
+  const displayPrerequisites = toDisplayUnit(
+    unit,
+    direction,
+  ).displayPrerequisites;
 
   if (unit.kind === 'repo') {
     return (

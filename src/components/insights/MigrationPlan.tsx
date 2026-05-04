@@ -51,7 +51,12 @@ export function MigrationPlan() {
     if (!stats) {
       return {
         displayWaves: [],
-        summary: { totalWaves: 0, totalRepos: 0, totalSCCs: 0, oversizedSCCs: [] },
+        summary: {
+          totalWaves: 0,
+          totalRepos: 0,
+          totalSCCs: 0,
+          oversizedSCCs: [],
+        },
         waves: [],
       };
     }
@@ -72,19 +77,16 @@ export function MigrationPlan() {
     [setSelectedRepo],
   );
 
-  const handleToggleWave = useCallback(
-    (waveId: string, open: boolean) => {
-      setOpenWaveIds((prev) => {
-        const has = prev.has(waveId);
-        if (open === has) return prev;
-        const next = new Set(prev);
-        if (open) next.add(waveId);
-        else next.delete(waveId);
-        return next;
-      });
-    },
-    [],
-  );
+  const handleToggleWave = useCallback((waveId: string, open: boolean) => {
+    setOpenWaveIds((prev) => {
+      const has = prev.has(waveId);
+      if (open === has) return prev;
+      const next = new Set(prev);
+      if (open) next.add(waveId);
+      else next.delete(waveId);
+      return next;
+    });
+  }, []);
 
   const jumpToWave = useCallback((waveId: string) => {
     setOpenWaveIds((prev) => {
@@ -158,8 +160,7 @@ export function MigrationPlan() {
       <p className="migration-cohorts__description">
         Recommended order based on dependency direction. {intro}{' '}
         <strong>Repos in the same wave can move in parallel.</strong>{' '}
-        Strongly-connected cohorts (SCCs) stay together as one indivisible
-        unit.
+        Strongly-connected cohorts (SCCs) stay together as one indivisible unit.
       </p>
 
       <div className="migration-plan__toolbar">
@@ -216,8 +217,8 @@ export function MigrationPlan() {
 
       {waves.length === 0 ? (
         <p className="migration-cohorts__empty">
-          No migration plan available. Load a repo map with at least one
-          scanned repo to see recommendations.
+          No migration plan available. Load a repo map with at least one scanned
+          repo to see recommendations.
         </p>
       ) : isAllOneSCC(waves) ? (
         <p className="migration-cohorts__empty">
@@ -269,19 +270,14 @@ export function MigrationPlan() {
                 target
               </summary>
               <ul>
-                {summary.oversizedSCCs.map(
-                  ({ waveId, waveLabel, sccSize }) => (
-                    <li key={waveId}>
-                      Cohort in {waveLabel} — {sccSize} repos{' '}
-                      <button
-                        type="button"
-                        onClick={() => jumpToWave(waveId)}
-                      >
-                        Jump to wave
-                      </button>
-                    </li>
-                  ),
-                )}
+                {summary.oversizedSCCs.map(({ waveId, waveLabel, sccSize }) => (
+                  <li key={waveId}>
+                    Cohort in {waveLabel} — {sccSize} repos{' '}
+                    <button type="button" onClick={() => jumpToWave(waveId)}>
+                      Jump to wave
+                    </button>
+                  </li>
+                ))}
               </ul>
             </details>
           )}

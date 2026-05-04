@@ -105,10 +105,7 @@ describe('assignUnitOrg', () => {
 describe('splitWavesForDisplay', () => {
   // 1
   it('wave with ≤ cap repos, single org → one DisplayWave un-dotted', () => {
-    const w = wave(0, [
-      repoUnit('acme/a', 0, 2),
-      repoUnit('acme/b', 0, 1),
-    ]);
+    const w = wave(0, [repoUnit('acme/a', 0, 2), repoUnit('acme/b', 0, 1)]);
     const out = splitWavesForDisplay([w]);
     expect(out).toHaveLength(1);
     expect(out[0]).toMatchObject({
@@ -145,10 +142,7 @@ describe('splitWavesForDisplay', () => {
 
   // 3b — alphabetical tie-break on org name when dependents tie
   it('alphabetical tie-break when org dependents tie', () => {
-    const w = wave(0, [
-      repoUnit('zebra/a', 0, 5),
-      repoUnit('alpha/a', 0, 5),
-    ]);
+    const w = wave(0, [repoUnit('zebra/a', 0, 5), repoUnit('alpha/a', 0, 5)]);
     const out = splitWavesForDisplay([w]);
     expect(out.map((d) => d.org)).toEqual(['alpha', 'zebra']);
   });

@@ -134,9 +134,7 @@ function appendUnitLines(
     );
   } else {
     const members = unit.repos.join(', ');
-    lines.push(
-      `- ${unit.repos[0]} (SCC of ${unit.repos.length}: ${members})`,
-    );
+    lines.push(`- ${unit.repos[0]} (SCC of ${unit.repos.length}: ${members})`);
     if (oversized) {
       lines.push('  > ⚠ Indivisible cohort — must migrate atomically');
     }

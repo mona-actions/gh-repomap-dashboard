@@ -1,9 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { toMarkdown } from '../migrationExport';
-import {
-  splitWavesForDisplay,
-  summarizePlan,
-} from '../migrationDisplay';
+import { splitWavesForDisplay, summarizePlan } from '../migrationDisplay';
 import type { MigrationUnit, MigrationWave } from '../connectivity';
 
 // Mirrors the trust-boundary rule documented in migrationExport.ts:
@@ -119,9 +116,7 @@ describe('toMarkdown', () => {
       generatedAt: FIXED_DATE,
     });
     expect(sinks).toContain('# Migration Plan — Foundations first');
-    expect(sinks).toContain(
-      'Each wave should complete before the next begins',
-    );
+    expect(sinks).toContain('Each wave should complete before the next begins');
 
     const sources = toMarkdown(display, summarizePlan(display), {
       direction: 'sources-first',

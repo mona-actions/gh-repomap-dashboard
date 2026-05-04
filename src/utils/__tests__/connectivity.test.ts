@@ -727,7 +727,9 @@ describe('MigrationUnit raw fields', () => {
       { clusters: [], strong_clusters: [] },
       graph,
     );
-    const a = waves.flatMap((w) => w.units).find((u) => u.repos[0] === 'org/a')!;
+    const a = waves
+      .flatMap((w) => w.units)
+      .find((u) => u.repos[0] === 'org/a')!;
     // Phantom ext/in excluded from inbound; org/b counted.
     expect(a.externalInboundCount).toBe(1);
     // Phantom ext/out excluded from outbound; org/c counted.
@@ -754,4 +756,3 @@ describe('deriveMigrationOrder — performance', () => {
     expect(elapsed).toBeLessThan(2000);
   });
 });
-

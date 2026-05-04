@@ -41,8 +41,9 @@ function loadAppLib() {
 }
 
 function loadIsolatedRepos(n: number) {
-  const scanned = Array.from({ length: n }, (_, i) =>
-    `org/r${String(i).padStart(2, '0')}`,
+  const scanned = Array.from(
+    { length: n },
+    (_, i) => `org/r${String(i).padStart(2, '0')}`,
   );
   useDataStore.setState({
     graph: makeGraph({ scanned, edges: [] }),
@@ -79,9 +80,7 @@ describe('MigrationPlan', () => {
     expect(
       screen.getByRole('heading', { name: 'Migration Grouping' }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/No migration plan available/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/No migration plan available/)).toBeInTheDocument();
   });
 
   it('renders waves in order with the foundation in Wave 1', () => {
@@ -164,7 +163,9 @@ describe('MigrationPlan', () => {
       'details.migration-plan__wave-details',
     );
     expect(detailsList.length).toBeGreaterThan(0);
-    detailsList.forEach((d) => expect((d as HTMLDetailsElement).open).toBe(false));
+    detailsList.forEach((d) =>
+      expect((d as HTMLDetailsElement).open).toBe(false),
+    );
     expect(screen.getByText(/Wave 1 · org ·/)).toBeInTheDocument();
 
     const firstSummary = detailsList[0].querySelector('summary')!;
@@ -176,7 +177,9 @@ describe('MigrationPlan', () => {
     loadOversizedScc();
     render(<MigrationPlan />);
     expect(
-      screen.getByText(/Indivisible cohort — 101 repos must migrate atomically/),
+      screen.getByText(
+        /Indivisible cohort — 101 repos must migrate atomically/,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -212,7 +215,9 @@ describe('MigrationPlan', () => {
     const sinks = screen.getByRole('radio', { name: 'Foundations first' });
     sinks.focus();
     await user.keyboard('{ArrowRight}');
-    expect(screen.getByRole('radio', { name: 'Consumers first' })).toBeChecked();
+    expect(
+      screen.getByRole('radio', { name: 'Consumers first' }),
+    ).toBeChecked();
   });
 
   // ── Controlled <details> ──────────────────────────────────────
@@ -394,7 +399,9 @@ describe('MigrationPlan', () => {
     const rollup = container.querySelector('details.migration-plan__rollup');
     expect(rollup).toBeInTheDocument();
     expect(rollup).toHaveTextContent(/exceed the 100-repo target/);
-    expect(within(rollup as HTMLElement).getByText(/101 repos/)).toBeInTheDocument();
+    expect(
+      within(rollup as HTMLElement).getByText(/101 repos/),
+    ).toBeInTheDocument();
   });
 
   it('does not render rollup when no oversized cohort exists', () => {
@@ -509,9 +516,7 @@ describe('MigrationPlan', () => {
     loadAppLib();
     render(<MigrationPlan />);
     await user.click(screen.getByRole('radio', { name: 'Consumers first' }));
-    expect(
-      screen.getByText(/Consumer apps move first/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Consumer apps move first/)).toBeInTheDocument();
   });
 
   it('Wave 1 sub-label flips between Foundations and Top-level consumers', async () => {
@@ -543,6 +548,8 @@ describe('MigrationPlan', () => {
     const headings2 = screen.getAllByRole('heading', { level: 4 });
     const newWave2 = headings2[1].closest('article')!;
     expect(newWave2).toHaveTextContent('org/lib');
-    expect(within(newWave2).getByText(/Prerequisites \(1\)/)).toBeInTheDocument();
+    expect(
+      within(newWave2).getByText(/Prerequisites \(1\)/),
+    ).toBeInTheDocument();
   });
 });

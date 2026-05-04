@@ -176,9 +176,7 @@ export function toDisplayUnit(
   direction: MigrationDirection,
 ): DisplayUnit {
   const displayPrerequisites =
-    direction === 'sinks-first'
-      ? unit.graphDependencies
-      : unit.graphDependents;
+    direction === 'sinks-first' ? unit.graphDependencies : unit.graphDependents;
   return { ...unit, displayPrerequisites };
 }
 
