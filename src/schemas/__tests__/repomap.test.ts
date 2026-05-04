@@ -576,6 +576,23 @@ describe('DirectDependencySchema', () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it('rejects dependency with non-slug repo (Markdown injection guard)', () => {
+    const result = DirectDependencySchema.safeParse({
+      repo: 'evil [link](http://x)',
+      type: 'package',
+      confidence: 'high',
+      target_scanned: true,
+      source_file: 'package.json',
+      detail: {
+        type: 'package',
+        package_name: 'test',
+        ecosystem: 'npm',
+        version: '1.0.0',
+      },
+    });
+    expect(result.success).toBe(false);
+  });
 });
 
 // ────────────────────────────────────────────────────────────────────────────

@@ -9,6 +9,15 @@
  */
 import { z } from 'zod';
 
+/**
+ * GitHub repo slug: `<owner>/<repo>` where each segment uses `[A-Za-z0-9._-]`.
+ * Enforced at the schema layer so downstream code (e.g. Markdown export) can
+ * trust that repo strings contain no Markdown-special characters.
+ */
+const GITHUB_REPO_SLUG = /^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/;
+const repoSlug = () =>
+  z.string().regex(GITHUB_REPO_SLUG, 'must be "owner/repo" slug');
+
 // ────────────────────────────────────────────────────────────────────────────
 // Split Info
 // ────────────────────────────────────────────────────────────────────────────
@@ -142,7 +151,7 @@ export const DependencyDetailSchema = z.discriminatedUnion('type', [
 export const DirectDependencySchema = z
   .object({
     /** Target repository in "org/repo" format. */
-    repo: z.string(),
+    repo: repoSlug(),
     /** Dependency type — determines detail shape. */
     type: z.enum([
       'package',
@@ -167,9 +176,9 @@ export const DirectDependencySchema = z
 export const TransitiveDependencySchema = z
   .object({
     /** Target repository in "org/repo" format. */
-    repo: z.string(),
+    repo: repoSlug(),
     /** Intermediate repos forming the transitive chain. */
-    via: z.array(z.string()).default([]),
+    via: z.array(repoSlug()).default([]),
     /** Dependency type of the final hop. */
     type: z.enum([
       'package',
@@ -248,7 +257,7 @@ export const UnresolvedPackageSchema = z
 
 export const MostDependedOnSchema = z
   .object({
-    repo: z.string(),
+    repo: repoSlug(),
     direct_dependents: z.number(),
   })
   .passthrough();
@@ -256,7 +265,7 @@ export const MostDependedOnSchema = z
 export const ClusterSchema = z
   .object({
     id: z.number(),
-    repos: z.array(z.string()),
+    repos: z.array(repoSlug()),
     size: z.number(),
   })
   .passthrough();
@@ -278,9 +287,9 @@ export const StatsSchema = z
     /** Mutual dependency groups in the directed graph (strong connectivity). */
     strong_clusters: z.preprocess((v) => v ?? [], z.array(ClusterSchema)),
     /** Circular dependency cycles that need attention. */
-    circular_deps: z.preprocess((v) => v ?? [], z.array(z.array(z.string()))),
+    circular_deps: z.preprocess((v) => v ?? [], z.array(z.array(repoSlug()))),
     /** Repos with zero inbound or outbound edges. */
-    orphan_repos: z.preprocess((v) => v ?? [], z.array(z.string())),
+    orphan_repos: z.preprocess((v) => v ?? [], z.array(repoSlug())),
   })
   .passthrough();
 
@@ -295,11 +304,11 @@ export const OutputSchema = z
     /** Scan context, timing, and file-split metadata. */
     metadata: MetadataSchema,
     /** Map of "org/repo" → RepoNode. The core dependency graph. */
-    graph: z.preprocess((v) => v ?? {}, z.record(z.string(), RepoNodeSchema)),
+    graph: z.preprocess((v) => v ?? {}, z.record(repoSlug(), RepoNodeSchema)),
     /** Map of "org/repo" → unresolved packages for that repo. */
     unresolved: z.preprocess(
       (v) => v ?? {},
-      z.record(z.string(), z.array(UnresolvedPackageSchema)),
+      z.record(repoSlug(), z.array(UnresolvedPackageSchema)),
     ),
     /** Pre-computed analytics and summary statistics. */
     stats: StatsSchema,
