@@ -128,7 +128,9 @@ export function deriveMigrationCohorts(
   return coreClusters.map((cluster) => {
     const coreSet = new Set(cluster.repos);
 
-    const recommendedDependencies = graph ? externalOutbound(coreSet, graph) : [];
+    const recommendedDependencies = graph
+      ? externalOutbound(coreSet, graph)
+      : [];
     const recommendedDependents = graph ? externalInbound(coreSet, graph) : [];
 
     return {
