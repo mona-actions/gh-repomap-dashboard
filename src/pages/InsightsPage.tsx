@@ -12,6 +12,7 @@ import { ClusterExplorer } from '@/components/insights/ClusterExplorer';
 import { MutualDependencyGroups } from '@/components/insights/MutualDependencyGroups';
 import { ConnectivityComparison } from '@/components/insights/ConnectivityComparison';
 import { ConnectivityMigrationCohorts } from '@/components/insights/ConnectivityMigrationCohorts';
+import { MigrationPlan } from '@/components/insights/MigrationPlan';
 import { UnresolvedPackages } from '@/components/insights/UnresolvedPackages';
 
 type InsightTab =
@@ -20,6 +21,7 @@ type InsightTab =
   | 'orphans'
   | 'clusters'
   | 'strongClusters'
+  | 'migration'
   | 'unresolved';
 
 interface TabConfig {
@@ -33,6 +35,7 @@ const TABS: TabConfig[] = [
   { id: 'orphans', label: 'Orphan Repos' },
   { id: 'clusters', label: 'Repo Groups (Weak)' },
   { id: 'strongClusters', label: 'Repo Groups (Strong)' },
+  { id: 'migration', label: 'Migration Grouping' },
   { id: 'unresolved', label: 'Unresolved Packages' },
 ];
 
@@ -94,6 +97,7 @@ export default function InsightsPage() {
               <MutualDependencyGroups />
             </>
           )}
+          {activeTab === 'migration' && <MigrationPlan />}
           {activeTab === 'unresolved' && <UnresolvedPackages />}
         </div>
       </div>
