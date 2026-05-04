@@ -59,6 +59,19 @@ function wave(level: number, units: MigrationUnit[]): MigrationWave {
 }
 
 describe('toMarkdown', () => {
+  it('formats Generated date in UTC (matches toISOString filename)', () => {
+    // Contract: header date must equal the same date the filename uses
+    // (toISOString().slice(0,10)). Pinning to that contract documents intent
+    // and keeps the assertion correct for any runner timezone.
+    const d = new Date(Date.UTC(2025, 0, 1, 0, 30));
+    const out = toMarkdown([], summarizePlan([]), {
+      direction: 'sinks-first',
+      generatedAt: d,
+    });
+    expect(out).toContain(`Generated ${d.toISOString().slice(0, 10)}`);
+    expect(out).toContain('Generated 2025-01-01');
+  });
+
   it('empty plan → header-only output', () => {
     const out = toMarkdown([], summarizePlan([]), {
       direction: 'sinks-first',

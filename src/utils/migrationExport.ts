@@ -1,10 +1,10 @@
 /**
  * Pure Markdown serialization of a migration plan. No React imports.
  *
- * Trust boundary: GitHub repo names are constrained to `[A-Za-z0-9._-]` for
- * both the org and repo segment (separated by `/`). None of those characters
- * have Markdown-special meaning, so we apply NO escaping. If the input ever
- * widens beyond GitHub repos, revisit this assumption.
+ * Trust boundary: repo strings are validated against `GITHUB_REPO_SLUG` in
+ * `src/schemas/repomap.ts` — `[A-Za-z0-9._-]+/[A-Za-z0-9._-]+`. None of those
+ * characters have Markdown-special meaning, so we apply NO escaping. If that
+ * regex is loosened, revisit this assumption and add escaping here.
  */
 import {
   toDisplayUnit,
@@ -168,9 +168,10 @@ function groupByLevel(displayWaves: DisplayWave[]): WaveGroup[] {
 }
 
 function formatDate(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
+  // UTC to match the toISOString-based download filename in MigrationPlan.tsx.
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(date.getUTCDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
 

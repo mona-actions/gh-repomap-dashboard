@@ -42,7 +42,7 @@ export function MigrationWaveCard({
 
   const isSplit = totalSubWavesAtLevel > 1;
   const waveLabel = isSplit
-    ? `Wave ${level + 1}.${subIndex}`
+    ? `Sub-wave ${level + 1}.${subIndex}`
     : `Wave ${level + 1}`;
 
   // Wave 1 sub-label flips with direction; later waves render no sub-label.
