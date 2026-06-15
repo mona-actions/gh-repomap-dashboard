@@ -4,6 +4,9 @@
   "version": "0.1.1",
   "type": "module",
   "description": "Static SPA dashboard for visualizing gh-repo-map JSON output — inter-repository dependency graphs at enterprise scale.",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
