@@ -33,15 +33,31 @@ export default defineConfig({
     chunkSizeWarningLimit: 350,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-primer': ['@primer/react', '@primer/octicons-react'],
-          'vendor-graph': [
-            'sigma',
-            'graphology',
-            'graphology-layout-forceatlas2',
-          ],
-          'vendor-data': ['zod', 'zustand', 'comlink', 'minisearch'],
+        manualChunks(id) {
+          if (
+            ['react', 'react-dom', 'react-router-dom'].some((pkg) =>
+              id.includes(`node_modules/${pkg}/`),
+            )
+          )
+            return 'vendor-react';
+          if (
+            ['@primer/react', '@primer/octicons-react'].some((pkg) =>
+              id.includes(`node_modules/${pkg}/`),
+            )
+          )
+            return 'vendor-primer';
+          if (
+            ['sigma', 'graphology', 'graphology-layout-forceatlas2'].some(
+              (pkg) => id.includes(`node_modules/${pkg}/`),
+            )
+          )
+            return 'vendor-graph';
+          if (
+            ['zod', 'zustand', 'comlink', 'minisearch'].some((pkg) =>
+              id.includes(`node_modules/${pkg}/`),
+            )
+          )
+            return 'vendor-data';
         },
       },
     },
